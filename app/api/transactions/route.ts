@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     if (err instanceof Error && err.message === "INVALID_CURSOR") {
       return apiError(400, "INVALID_CURSOR", "Cursor yang diberikan tidak valid");
     }
-    return handleApiError(err);
+    return handleApiError(err, "GET", "/api/transactions");
   }
 }
 
@@ -74,6 +74,6 @@ export async function POST(request: NextRequest) {
     const created = await createTransactionRecord(user.id, parsed.data);
     return apiSuccess(created, 201);
   } catch (err) {
-    return handleApiError(err);
+    return handleApiError(err, "POST", "/api/transactions");
   }
 }

@@ -39,7 +39,11 @@ export function apiError(
 /**
  * Memetakan error umum dan ZodError menjadi respons API terstandarisasi.
  */
-export function handleApiError(err: unknown): NextResponse<ApiErrorResponse> {
+export function handleApiError(
+  err: unknown,
+  method?: string,
+  routePath?: string
+): NextResponse<ApiErrorResponse> {
   if (err instanceof InsufficientBalanceError) {
     return apiError(422, "INSUFFICIENT_BALANCE", "Saldo tidak cukup");
   }
@@ -54,6 +58,14 @@ export function handleApiError(err: unknown): NextResponse<ApiErrorResponse> {
   }
 
   // Log pesan internal secara ringkas tanpa data pengguna
-  console.error("Internal API error:", err instanceof Error ? err.message : String(err));
+  const rawMsg = err instanceof Error ? err.message : String(err);
+  const truncatedMsg = rawMsg.slice(0, 200);
+
+  if (method && routePath) {
+    console.error(`[api] ${method} ${routePath} ${truncatedMsg}`);
+  } else {
+    console.error("Internal API error:", truncatedMsg);
+  }
+
   return apiError(500, "INTERNAL_SERVER_ERROR", "Terjadi kesalahan internal pada server");
 }

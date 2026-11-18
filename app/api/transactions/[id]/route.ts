@@ -42,7 +42,7 @@ export async function GET(
 
     return apiSuccess(item, 200);
   } catch (err) {
-    return handleApiError(err);
+    return handleApiError(err, "GET", "/api/transactions/[id]");
   }
 }
 
@@ -95,7 +95,7 @@ export async function PATCH(
 
     return apiSuccess(updated, 200);
   } catch (err) {
-    return handleApiError(err);
+    return handleApiError(err, "PATCH", "/api/transactions/[id]");
   }
 }
 
@@ -131,6 +131,6 @@ export async function DELETE(
 
     return apiSuccess(result, 200);
   } catch (err) {
-    return handleApiError(err);
+    return handleApiError(err, "DELETE", "/api/transactions/[id]");
   }
 }
