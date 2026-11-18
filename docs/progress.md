@@ -12,15 +12,21 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 3: Langkah 0 (Pencatatan keputusan produk di kode dan dokumen)
+Fase 3: Langkah 1 (Kerangka layout aplikasi, sidebar desktop, bottom nav HP, tombol melayang, dan halaman placeholder)
 
 ## Terakhir Selesai
-Fase 2: Lapisan database Drizzle, skema tabel `transactions` + SQL migrasi RLS, validasi Zod, fungsi bisnis aturan saldo murni & advisory lock database, konfigurasi Vitest + 32 unit test lulus, serta verifikasi lint, typecheck, dan build lulus.
+Fase 3 (Langkah 1): Pembuatan route group `(app)` dengan layout terpadu, komponen navigasi `Sidebar` (desktop lg) dan `BottomNav` (mobile), tombol aksi mengambang `+` (/transaksi/baru), halaman `/akun` (email & tombol keluar), rute placeholder (`/transaksi`, `/transaksi/baru`, `/grafik`, `/export`, `/edukasi`), footer konsisten, serta kelulusan lint, typecheck, test, dan build.
 
 ## Tugas Berikutnya
-Fase 3: Implementasi UI dan endpoint transaksi (tambah, edit, hapus, daftar, filter, cari).
+Fase 3: Langkah 2 (Implementasi fitur transaksi: form tambah/edit transaksi, validasi input, dan operasi database).
 
 ## Catatan Penting
+- Kerangka Navigasi & Tata Letak:
+  - Route group: `(app)` membungkus `/`, `/transaksi`, `/transaksi/baru`, `/grafik`, `/export`, `/edukasi`, `/akun`. Rute `/login` dan `/auth/callback` tetap di luar `(app)`.
+  - Breakpoint: `lg` (1024px) memisahkan tampilan desktop (Sidebar di kiri) dan mobile (Bottom Navigation di bawah).
+  - Gaya ikon SVG buatan sendiri dengan garis tipis konsisten (gaya ikon belum diputuskan secara final oleh developer).
+  - Elemen sentuh interaktif dirancang minimal 44-48 px untuk keramahan jempol mobile.
+  - Halaman `/akun` memverifikasi pengguna di sisi server di dalam batas React `Suspense` untuk mematuhi aturan Cache Components Next.js 16.
 - Keputusan Produk Fase 3 (Langkah 0):
   - Tanggal transaksi di masa depan DITOLAK (maksimal hari ini WIB `Asia/Jakarta`).
   - Panjang keterangan/sumber maksimal 100 karakter setelah di-trim (diterapkan di validasi Zod aplikasi, belum di constraint database).
@@ -28,22 +34,7 @@ Fase 3: Implementasi UI dan endpoint transaksi (tambah, edit, hapus, daftar, fil
   - Paginasi daftar: 20 item per tampilan (`PAGE_SIZE = 20`) dengan tombol "Muat lebih banyak".
   - Format nominal: `Rp 1.250.000` (titik pemisah ribuan).
   - Format tanggal: `18 Nov 2026` (Indonesia 3 huruf bulan, independen dari zona waktu lokal mesin).
-- File baru Fase 3 (Langkah 0):
-  - `lib/finance/date.ts` & `date.test.ts`: Helper `todayWIB(now)` menggunakan `Intl` dengan `timeZone: "Asia/Jakarta"`.
-  - `lib/finance/constants.ts`: Konstanta `PAGE_SIZE`, `DESCRIPTION_MAX_LENGTH`, dan komentar urutan daftar.
-  - `lib/format.ts` & `format.test.ts`: Helper `formatRupiah` dan `formatTanggal`.
-  - Pembaruan `lib/finance/schemas.ts` & `schemas.test.ts`: Validasi tolak masa depan dan batas 100 karakter.
-- File penting Fase 2:
-  - `lib/db/index.ts`: Klien Drizzle lazy dengan driver postgres.js (`prepare: false` untuk transaction pooler).
-  - `lib/db/schema.ts`: Skema tabel `transactions` (bigint Rupiah, check constraint > 0, check description non-empty, index).
-  - `drizzle/0000_curved_reptil.sql`: File migrasi SQL mencakup FK `auth.users(id)` cascade dan kebijakan RLS Supabase.
-  - `lib/finance/balance.ts`: Fungsi murni kalkulasi saldo, validasi add/update/delete, dan `InsufficientBalanceError`.
-  - `lib/finance/balance-db.ts`: Fungsi `getBalance(userId)` via SQL SUM dan `runWithUserLock` berbasis `pg_advisory_xact_lock(hashtext(userId))`.
-  - `vitest.config.mts`: Konfigurasi Vitest ESM dengan alias `@`.
-  - `drizzle.config.ts`: Konfigurasi Drizzle dengan pemuat `@next/env`.
-- Variabel environment: `DATABASE_URL` dan `DATABASE_MIGRATION_URL` (hanya di server).
-- Keamanan: Query Drizzle wajib menyertakan filter eksplisit `user_id = userId` pengguna terverifikasi karena connection pooler Drizzle membypass RLS Supabase.
 
 ## Masalah Terbuka
 - Developer perlu menjalankan `npm run db:migrate` setelah mengisi `DATABASE_MIGRATION_URL` di `.env.local`.
-- Testing manual login Google di browser oleh developer (memeriksa keberadaan cookie `sb-*-auth-token`, akses Beranda, dan tombol Keluar).
+- Testing manual alur navigasi dan tampilan layout di browser oleh developer (desktop vs mobile viewport).
