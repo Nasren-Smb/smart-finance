@@ -32,9 +32,9 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
 ## 4. Aturan Transaksi
 - **Jenis**: Pemasukan atau pengeluaran.
 - **Field**: Jenis, nominal, tanggal, teks pendukung.
-- **Validasi Teks**: Pengeluaran wajib memiliki keterangan (tujuan transaksi); pemasukan wajib memiliki sumber.
+- **Validasi Teks**: Pengeluaran wajib memiliki keterangan (tujuan transaksi); pemasukan wajib memiliki sumber. Batas maksimal keterangan/sumber adalah 100 karakter setelah di-trim (diterapkan pada validasi aplikasi, belum di database).
 - **Nominal**: Bilangan bulat Rupiah (dilarang float).
-- **Tanggal**: Diizinkan tanggal mundur.
+- **Tanggal**: Diizinkan tanggal mundur. Tanggal transaksi di masa depan DITOLAK (batas maksimal adalah hari ini menurut zona waktu WIB / Asia/Jakarta).
 - **Kategori**: TIDAK ADA kategori.
 - **Aksi**: Edit dan hapus hanya oleh pemilik transaksi; penghapusan wajib konfirmasi.
 
@@ -64,25 +64,31 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
 - Interaksi: Klik atau sentuh batang akan membuka halaman Transaksi dengan filter periode tersebut.
 - Dilarang membuat grafik porsi per kategori.
 
-## 8. Pencarian, Filter, dan Export
+## 8. Pencarian, Filter, Daftar Transaksi, dan Export
 - **Daftar Transaksi**: Filter berdasarkan jenis dan periode; pencarian melalui keterangan atau sumber.
+  - Urutan tampilan: Terbaru dulu (`transaction_date` menurun / DESC, lalu `created_at` menurun / DESC, lalu `id` menurun / DESC agar stabil).
+  - Paginasi: 20 item per tampilan dengan tombol "Muat lebih banyak".
 - **Export Laporan**:
   - Pilihan isi: (a) pengeluaran + total, (b) pemasukan + total, (c) semua + selisih.
   - Pilihan periode: Per bulan atau rentang tanggal.
   - Format berkas: Excel atau PDF.
 
-## 9. Edukasi & Motivasi
+## 9. Format Tampilan
+- **Nominal**: "Rp 1.250.000" (titik sebagai pemisah ribuan, awalan "Rp ").
+- **Tanggal**: "18 Nov 2026" (format Indonesia: tanggal, nama bulan singkat 3 huruf, tahun).
+
+## 10. Edukasi & Motivasi
 - Berisi hanya kalimat motivasi keuangan ASLI tanpa nama tokoh; tanpa artikel atau tips.
 - Disimpan dalam satu file statis; hanya boleh diubah langsung oleh developer.
 - Tanpa fitur admin dan tanpa tabel database.
 - Tampilan: "Kalimat hari ini" di posisi atas, daftar lengkap di bawah.
 
-## 10. Kondisi Khusus Antarmuka
+## 11. Kondisi Khusus Antarmuka
 - **Pengguna Baru**: Menampilkan saldo 0 disertai ajakan "Catat pemasukan pertamamu".
 - **Data Kosong**: Menampilkan pesan ramah, bukan layar kosong.
 - **Status Error & 404**: Halaman tidak ditemukan dan kegagalan memuat memiliki antarmuka tersendiri.
 
-## 11. Di Luar Cakupan v1
+## 12. Di Luar Cakupan v1
 - Transaksi berulang.
 - Fitur kategori.
 - Multi-dompet.
@@ -91,9 +97,5 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
 - Tema terang.
 - Progressive Web App (PWA).
 
-## 12. Belum Diputuskan (Tanya Developer, Jangan Menebak)
-- Izin tanggal transaksi di masa depan.
-- Batas panjang karakter untuk keterangan dan sumber.
-- Urutan serta jumlah item per halaman pada daftar Transaksi.
-- Format tampilan tanggal dan nominal uang.
+## 13. Belum Diputuskan (Tanya Developer, Jangan Menebak)
 - Struktur kolom dan tata letak dokumen Excel serta PDF.
