@@ -12,33 +12,30 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 3: Langkah 3 (Lapisan server transaksi / Route Handlers)
+Fase 3: Langkah 4 (Perbaikan persistensi state form tambah transaksi pada Cache Components)
 
 ## Terakhir Selesai
-Fase 3 (Langkah 3): Implementasi Route Handlers REST API (`/api/transactions`, `/api/transactions/[id]`, `/api/balance`) lengkap dengan verifikasi pengguna server-side, helper respons/error seragam, validasi Zod (termasuk batas `Number.MAX_SAFE_INTEGER`), advisory lock transaksi database, pagination keyset cursor buram base64url, sanitasi pencarian LIKE wildcard, dokumentasi `docs/api.md`, serta 58 unit test lulus.
+Fase 3 (Langkah 4): Perbaikan bug state form `/transaksi/baru` yang tertahan dalam kondisi "Menyimpan..." dan isian lama tidak ter-reset akibat perilaku React `<Activity mode="hidden">` pada Cache Components Next.js 16. State `isLoading` kini selalu dikembalikan di blok `finally`, form direset bersih di jalur sukses dan melalui cleanup `useLayoutEffect`, toggle jenis dinonaktifkan saat mengirim untuk mencegah race condition, serta verifikasi lint, typecheck, test (68 passed), dan build lulus 100%.
 
 ## Tugas Berikutnya
-Fase 3: Langkah 4 (Antarmuka pengguna transaksi: lembar tambah/edit transaksi, kartu daftar transaksi di HP, tabel di laptop, filter, cari, dan paginasi "Muat lebih banyak").
+Fase 3: Langkah 5 (Fitur edit transaksi, konfirmasi hapus transaksi, filter jenis & rentang tanggal, serta pencarian transaksi).
 
 ## Catatan Penting
-- Lapisan Server Transaksi (Route Handlers):
-  - `POST /api/transactions`: Buat transaksi dengan validasi saldo server-side & advisory lock (201).
-  - `GET /api/transactions`: Daftar transaksi terpaginasi keyset cursor dengan filter `type`, `from`, `to`, `q` (escape LIKE).
-  - `GET /api/transactions/[id]`: Ambil detail transaksi (404 jika bukan milik pengguna).
-  - `PATCH /api/transactions/[id]`: Ubah transaksi parsial dengan validasi saldo (404 / 422).
-  - `DELETE /api/transactions/[id]`: Hapus transaksi dengan validasi saldo (menolak 422 jika saldo menjadi negatif).
-  - `GET /api/balance`: Saldo seluruh riwayat pengguna.
-- Helper & Logika Server:
-  - `lib/api/response.ts`: Format respons seragam `{ data }` dan `{ error: { code, message, fields } }`, serta pemetaan error.
-  - `lib/api/auth.ts`: Verifikasi server-side `getUser()` mengekstrak `user.id`.
-  - `lib/api/cursor.ts`: Keyset pagination encoder/decoder base64url.
-  - `lib/api/query.ts`: Skema query parameter dan fungsi escape wildcard LIKE (`%`, `_`, `\`).
-  - `lib/finance/transaction-service.ts`: Logika mutasi dan pembacaan transaksi Drizzle ber-filter `user_id`.
-- Validasi Nominal:
-  - Batas atas nominal dibatasi hingga `Number.MAX_SAFE_INTEGER` (`9.007.199.254.740.991`) untuk mencegah presisi floating point overflow pada runtime JavaScript.
-- Dokumentasi:
-  - Dibuat `docs/api.md` yang memuat spesifikasi lengkap kontrak API.
+- Pelajaran Cache Components Next.js 16 (Form Reset & Navigation):
+  - Dengan `cacheComponents: true`, Next.js tidak me-unmount rute saat pengguna bernavigasi berpindah halaman, melainkan menggunakan React `<Activity mode="hidden">` (display: none).
+  - Akibatnya, `useState` tidak otomatis di-reset saat rute dikunjungi kembali kecuali form direset secara eksplisit (`resetForm()`) atau melalui cleanup lifecycle (`useLayoutEffect`).
+  - Penjaminan `setIsLoading(false)` wajib diletakkan di blok `finally` agar tidak ada jalur eksekusi yang meninggalkan tombol dalam keadaan disabled / "Menyimpan...".
+- Halaman UI Transaksi:
+  - `/transaksi/baru`: Client component form tambah transaksi dienkapsulasi `<Suspense>` untuk kepatuhan Cache Components Next.js 16 terkait evaluasi waktu. Mengirim request ke `POST /api/transactions`.
+  - `/transaksi`: Client component yang memanggil `GET /api/balance` dan `GET /api/transactions`. Mendukung keyset pagination menggunakan `nextCursor`. Responsif (kartu di mobile, tabel di desktop lg).
+- Helper Murni:
+  - `lib/format-input.ts`: Fungsi `parseNominal` (parsing input string ke integer Rupiah aman) dan `mapApiResponseError` (pemetaan kode status HTTP/error payload ke pesan ramah pengguna).
+- Aksesibilitas & Desain:
+  - Seluruh input form terhubung dengan `<label htmlFor="...">`.
+  - Area pesan status dan error menggunakan atribut `aria-live="polite"`.
+  - Target sentuh interaktif dirancang minimal 44-48 px.
+  - Teks sepenuhnya Bahasa Indonesia dan warna murni menggunakan token Tailwind (`bg-main`, `surface`, `surface-elevated`, `line`, `text-main`, `text-secondary`, `text-muted`, `accent`, `income`, `expense`, `warning`).
 
 ## Masalah Terbuka
 - Developer perlu menjalankan `npm run db:migrate` setelah mengisi `DATABASE_MIGRATION_URL` di `.env.local`.
-- Pengujian langsung endpoint Route Handlers terhadap instance PostgreSQL Supabase nyata (unit test saat ini menguji logika murni, skema validasi, cursor, escape LIKE, dan pemetaan error tanpa koneksi DB).
+- Pengujian manual interaksi form tambah transaksi berulang kali di peramban (memastikan form selalu segar dan tombol kembali aktif setelah submit).
