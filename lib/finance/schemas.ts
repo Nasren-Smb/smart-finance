@@ -46,17 +46,26 @@ export function createTransactionDateSchema(now: Date = new Date()) {
 export const transactionDateSchema = createTransactionDateSchema();
 
 /**
+ * Skema nominal amount: bilangan bulat positif Rupiah, dibatasi maksimal Number.MAX_SAFE_INTEGER
+ */
+export const amountSchema = z
+  .number({
+    error: "Nominal wajib diisi berupa angka",
+  })
+  .int("Nominal harus berupa bilangan bulat Rupiah")
+  .positive("Nominal harus lebih besar dari 0")
+  .max(
+    Number.MAX_SAFE_INTEGER,
+    `Nominal maksimal ${Number.MAX_SAFE_INTEGER}`
+  );
+
+/**
  * Membuat skema validasi transaksi lengkap dengan injeksi `now`.
  */
 export function createTransactionInputSchema(now: Date = new Date()) {
   return z.object({
     type: transactionTypeSchema,
-    amount: z
-      .number({
-        error: "Nominal wajib diisi berupa angka",
-      })
-      .int("Nominal harus berupa bilangan bulat Rupiah")
-      .positive("Nominal harus lebih besar dari 0"),
+    amount: amountSchema,
     description: z
       .string({
         error: "Keterangan/sumber wajib diisi berupa teks",
@@ -73,7 +82,11 @@ export function createTransactionInputSchema(now: Date = new Date()) {
 
 export const transactionInputSchema = createTransactionInputSchema();
 
-export const updateTransactionInputSchema = transactionInputSchema.partial();
+export const updateTransactionInputSchema = transactionInputSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Minimal satu field harus diubah",
+  });
 
 export type TransactionInput = z.infer<typeof transactionInputSchema>;
 export type UpdateTransactionInput = z.infer<typeof updateTransactionInputSchema>;
