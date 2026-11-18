@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { todayWIB } from "./date";
+import { DESCRIPTION_MAX_LENGTH } from "./constants";
 
 export const transactionTypeSchema = z.enum(["income", "expense"]);
 
@@ -7,7 +9,7 @@ const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 /**
  * Validasi string YYYY-MM-DD kalender yang valid (termasuk kabisat).
  */
-function isValidCalendarDate(dateStr: string): boolean {
+export function isValidCalendarDate(dateStr: string): boolean {
   if (!dateRegex.test(dateStr)) return false;
   const [yearStr, monthStr, dayStr] = dateStr.split("-");
   const year = Number(yearStr);
@@ -25,31 +27,51 @@ function isValidCalendarDate(dateStr: string): boolean {
   );
 }
 
-export const transactionDateSchema = z
-  .string({
-    error: "Tanggal transaksi wajib diisi",
-  })
-  // TODO: Kebijakan apakah tanggal transaksi di masa depan diizinkan belum diputuskan oleh developer. Saat ini diterima selama format kalender valid.
-  .refine(isValidCalendarDate, {
-    message: "Format tanggal harus YYYY-MM-DD yang valid",
-  });
-
-export const transactionInputSchema = z.object({
-  type: transactionTypeSchema,
-  amount: z
-    .number({
-      error: "Nominal wajib diisi berupa angka",
-    })
-    .int("Nominal harus berupa bilangan bulat Rupiah")
-    .positive("Nominal harus lebih besar dari 0"),
-  description: z
+/**
+ * Membuat skema validasi tanggal transaksi dengan injeksi `now` untuk batas WIB.
+ */
+export function createTransactionDateSchema(now: Date = new Date()) {
+  return z
     .string({
-      error: "Keterangan/sumber wajib diisi berupa teks",
+      error: "Tanggal transaksi wajib diisi",
     })
-    .trim()
-    .min(1, "Keterangan/sumber tidak boleh kosong"),
-  transaction_date: transactionDateSchema,
-});
+    .refine(isValidCalendarDate, {
+      message: "Format tanggal harus YYYY-MM-DD yang valid",
+    })
+    .refine((val) => val <= todayWIB(now), {
+      message: "Tanggal tidak boleh melewati hari ini",
+    });
+}
+
+export const transactionDateSchema = createTransactionDateSchema();
+
+/**
+ * Membuat skema validasi transaksi lengkap dengan injeksi `now`.
+ */
+export function createTransactionInputSchema(now: Date = new Date()) {
+  return z.object({
+    type: transactionTypeSchema,
+    amount: z
+      .number({
+        error: "Nominal wajib diisi berupa angka",
+      })
+      .int("Nominal harus berupa bilangan bulat Rupiah")
+      .positive("Nominal harus lebih besar dari 0"),
+    description: z
+      .string({
+        error: "Keterangan/sumber wajib diisi berupa teks",
+      })
+      .trim()
+      .min(1, "Keterangan/sumber tidak boleh kosong")
+      .max(
+        DESCRIPTION_MAX_LENGTH,
+        `Keterangan maksimal ${DESCRIPTION_MAX_LENGTH} karakter`
+      ),
+    transaction_date: createTransactionDateSchema(now),
+  });
+}
+
+export const transactionInputSchema = createTransactionInputSchema();
 
 export const updateTransactionInputSchema = transactionInputSchema.partial();
 
