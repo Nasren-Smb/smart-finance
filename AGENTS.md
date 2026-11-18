@@ -48,6 +48,7 @@ Sumber lengkap: [docs/product.md](file:///c:/Users/USER/Desktop/Smart-Finance/do
 - Pengeluaran wajib memiliki keterangan; pemasukan wajib memiliki sumber.
 - Tidak ada fitur kategori.
 - Isolasi data pengguna menggunakan Row Level Security (RLS).
+- Setiap query Drizzle WAJIB memfilter user_id dari pengguna yang sudah diverifikasi di server. RLS tidak melindungi query Drizzle (koneksi langsung).
 - Teks antarmuka sepenuhnya menggunakan Bahasa Indonesia.
 - Warna hanya menggunakan token Tailwind (rujuk [docs/design.md](file:///c:/Users/USER/Desktop/Smart-Finance/docs/design.md)); dilarang menulis kode hex langsung pada komponen.
 - Kalimat motivasi tersimpan di satu file statis; agent dilarang menambah atau mengubah isinya.
