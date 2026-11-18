@@ -12,15 +12,19 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 3: Langkah 1 (Kerangka layout aplikasi, sidebar desktop, bottom nav HP, tombol melayang, dan halaman placeholder)
+Fase 3: Langkah 2 (Migrasi konvensi middleware ke proxy Next.js 16.4.6)
 
 ## Terakhir Selesai
-Fase 3 (Langkah 1): Pembuatan route group `(app)` dengan layout terpadu, komponen navigasi `Sidebar` (desktop lg) dan `BottomNav` (mobile), tombol aksi mengambang `+` (/transaksi/baru), halaman `/akun` (email & tombol keluar), rute placeholder (`/transaksi`, `/transaksi/baru`, `/grafik`, `/export`, `/edukasi`), footer konsisten, serta kelulusan lint, typecheck, test, dan build.
+Fase 3 (Langkah 2): Migrasi konvensi file `middleware.ts` ke `proxy.ts` dengan ekspor fungsi `proxy` untuk Next.js 16.4.6. Peringatan deprecation build telah hilang sepenuhnya, dan verifikasi lint, typecheck, test, serta build lulus 100%.
 
 ## Tugas Berikutnya
-Fase 3: Langkah 2 (Implementasi fitur transaksi: form tambah/edit transaksi, validasi input, dan operasi database).
+Fase 3: Langkah 3 (Implementasi form tambah/edit transaksi, validasi, dan integrasi mutasi database).
 
 ## Catatan Penting
+- Migrasi Proxy Next.js 16:
+  - File root `middleware.ts` dimigrasikan ke `proxy.ts` dengan ekspor fungsi `proxy(request: NextRequest)`.
+  - Peringatan `The "middleware" file convention is deprecated. Please use "proxy" instead` telah hilang dari output build.
+  - Seluruh logika sinkronisasi sesi Supabase SSR dan proteksi rute pengalihan dipertahankan persis tanpa perubahan.
 - Kerangka Navigasi & Tata Letak:
   - Route group: `(app)` membungkus `/`, `/transaksi`, `/transaksi/baru`, `/grafik`, `/export`, `/edukasi`, `/akun`. Rute `/login` dan `/auth/callback` tetap di luar `(app)`.
   - Breakpoint: `lg` (1024px) memisahkan tampilan desktop (Sidebar di kiri) dan mobile (Bottom Navigation di bawah).
@@ -37,4 +41,4 @@ Fase 3: Langkah 2 (Implementasi fitur transaksi: form tambah/edit transaksi, val
 
 ## Masalah Terbuka
 - Developer perlu menjalankan `npm run db:migrate` setelah mengisi `DATABASE_MIGRATION_URL` di `.env.local`.
-- Testing manual alur navigasi dan tampilan layout di browser oleh developer (desktop vs mobile viewport).
+- Testing manual alur navigasi dan proteksi proxy oleh developer di browser (akses halaman tanpa login dialihkan ke `/login`, setelah login dapat mengakses rute di dalam `(app)`).
