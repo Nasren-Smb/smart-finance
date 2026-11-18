@@ -4,7 +4,7 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 
 ## Status Fase
 - [x] Fase 1: Setup proyek, koneksi Supabase, login Google
-- [ ] Fase 2: Skema database (Drizzle) dan aturan saldo
+- [x] Fase 2: Skema database (Drizzle) dan aturan saldo
 - [ ] Fase 3: Transaksi (tambah, edit, hapus, daftar, filter, cari)
 - [ ] Fase 4: Beranda (saldo dan ringkasan periode)
 - [ ] Fase 5: Grafik
@@ -15,31 +15,24 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 (kosong)
 
 ## Terakhir Selesai
-Fase 1: Setup proyek Next.js, perbaikan persistensi cookie sesi pada auth callback dan middleware/proxy, verifikasi lint, typecheck, dan build lulus.
+Fase 2: Lapisan database Drizzle, skema tabel `transactions` + SQL migrasi RLS, validasi Zod, fungsi bisnis aturan saldo murni & advisory lock database, konfigurasi Vitest + 32 unit test lulus, serta verifikasi lint, typecheck, dan build lulus.
 
 ## Tugas Berikutnya
-Fase 2.
+Developer menjalankan migrasi database (`npm run db:migrate`), lalu lanjut ke Fase 3 (Transaksi: tambah, edit, hapus, daftar, filter, cari).
 
 ## Catatan Penting
-- Token warna palet Tailwind CSS v4 di `app/globals.css`:
-  - `bg-main`: `#141416`
-  - `surface`: `#1C1C20`
-  - `surface-elevated`: `#26262B`
-  - `line`: `#2E2E34`
-  - `text-main`: `#F4F4F5`
-  - `text-secondary`: `#A1A1AA`
-  - `text-muted`: `#71717A`
-  - `accent`: `#60A5FA`
-  - `income`: `#34D399`
-  - `expense`: `#F87171`
-  - `warning`: `#FBBF24`
-- Pendekatan Sesi & Autentikasi:
-  - `@supabase/ssr` digunakan untuk browser client (`lib/supabase/client.ts`), server client (`lib/supabase/server.ts`), dan middleware sesi (`lib/supabase/middleware.ts` & `middleware.ts`).
-  - Route callback (`app/auth/callback/route.ts`) langsung mengikat `setAll` ke header cookie `NextResponse.redirect()` sehingga session cookie Supabase (`sb-*-auth-token`) tidak terbuang saat pengalihan kembali ke `/`.
-  - Middleware (`lib/supabase/middleware.ts`) menyalin seluruh cookie yang diperbarui/disinkronkan ke objek `NextResponse.redirect()` ketika terjadi pengalihan rute.
-  - Verifikasi keamanan server-side menggunakan metode resmi `supabase.auth.getUser()`.
-  - Halaman `/` dilindungi di level server dan dienkapsulasi dengan React `Suspense` untuk kompatibilitas partial prerendering / cacheComponents.
+- File penting Fase 2:
+  - `lib/db/index.ts`: Klien Drizzle lazy dengan driver postgres.js (`prepare: false` untuk transaction pooler).
+  - `lib/db/schema.ts`: Skema tabel `transactions` (bigint Rupiah, check constraint > 0, check description non-empty, index).
+  - `drizzle/0000_curved_reptil.sql`: File migrasi SQL mencakup FK `auth.users(id)` cascade dan kebijakan RLS Supabase.
+  - `lib/finance/balance.ts`: Fungsi murni kalkulasi saldo, validasi add/update/delete, dan `InsufficientBalanceError`.
+  - `lib/finance/balance-db.ts`: Fungsi `getBalance(userId)` via SQL SUM dan `runWithUserLock` berbasis `pg_advisory_xact_lock(hashtext(userId))`.
+  - `lib/finance/schemas.ts`: Skema validasi Zod untuk input transaksi.
+  - `vitest.config.mts`: Konfigurasi Vitest ESM dengan alias `@`.
+  - `drizzle.config.ts`: Konfigurasi Drizzle dengan pemuat `@next/env`.
+- Variabel environment baru: `DATABASE_URL` dan `DATABASE_MIGRATION_URL` (hanya diakses di server).
+- Keamanan: Query Drizzle wajib menyertakan filter eksplisit `user_id = userId` pengguna terverifikasi karena connection pooler Drizzle membypass RLS Supabase.
 
 ## Masalah Terbuka
+- Developer perlu menjalankan `npm run db:migrate` setelah mengisi `DATABASE_MIGRATION_URL` di `.env.local`.
 - Testing manual login Google di browser oleh developer (memeriksa keberadaan cookie `sb-*-auth-token`, akses Beranda, dan tombol Keluar).
-- Testing framework otomatis (Vitest) belum dipasang sesuai keputusan yang tertunda.
