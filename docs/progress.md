@@ -12,9 +12,34 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 5: Langkah 1 (Komponen UI visualisasi grafik batang pemasukan dan pengeluaran)
+Fase 5: Langkah 2 (Interaksi klik batang grafik menuju filter /transaksi dan kartu grafik ringkas di Beranda)
 
 ## Terakhir Selesai
+Fase 5 (Langkah 1):
+1. Instalasi library visualisasi data: `recharts@3.11.0` (kompatibel penuh dengan React 19).
+2. Pembuatan helper dan fungsi murni navigasi/label grafik di `lib/finance/chart-nav.ts`:
+   - `shiftAnchor`: pergeseran anchor per level (day: +/- 7 hari, week: +/- 1 bulan dengan penyesuaian akhir bulan, month: +/- 1 tahun dengan penyesuaian 29 Feb kabisat, year: tetap).
+   - `canGoNext`: pembatasan tombol "Berikutnya" jika periode berikutnya dimulai setelah hari ini WIB.
+   - `formatBucketLabel`: format label sumbu X (day: "Sen 16", week: "1–2 Nov" / "1 Nov", month: "Jan" s.d. "Des", year: "2026").
+   - `formatPeriodTitle`: format judul periode dinamis ("16–22 Nov 2026", "30 Nov – 6 Des 2026", "November 2026", "2026", "Semua tahun").
+   - `formatRupiahRingkas`: pemformatan sumbu Y ringkas ("0", "500 rb", "1 jt", "1,5 jt", "1 M").
+3. Unit test Vitest di `lib/finance/chart-nav.test.ts` (25 test case lulus 100%, total 159 tests proyek lulus).
+4. Pembuatan komponen grafik batang yang dipakai ulang `components/TransactionBarChart.tsx`:
+   - Batang Pemasukan (`var(--color-income)`) dan Pengeluaran (`var(--color-expense)`) berdampingan per bucket.
+   - Legenda bertanda `+` dan `−` dengan label jelas.
+   - Tooltip interaktif memformat nominal lengkap Rupiah tabular.
+   - Sumbu Y berformat ringkas, tinggi responsif 260px.
+   - Mount hydration aman via `useSyncExternalStore` tanpa peringatan rendering SSR.
+5. Pembuatan halaman `/grafik` di `app/(app)/grafik/page.tsx` & `GrafikContent.tsx`:
+   - Empat tab tingkat tampilan: "Harian" (default), "Mingguan", "Bulanan", "Tahunan".
+   - Tombol navigasi "Sebelumnya" dan "Berikutnya" (dinonaktifkan jika melewati hari ini).
+   - Penanganan `AbortController` saat klik cepat.
+   - Status memuat, status gagal muat dengan tombol coba lagi, dan tampilan data kosong "Belum ada transaksi di periode ini".
+   - Sinkronisasi penyegaran data via `window.focus` di bawah Cache Components Next.js 16.
+   - Server Component loader dibungkus `await connection()` di dalam `<Suspense>` untuk stabilitas PPR.
+6. Pembaruan `docs/tech-stack.md`: status Recharts `3.11.0` terpasang dan final.
+7. Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus, 159 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100%.
+
 Fase 5 (Langkah 0):
 1. Pembuatan fungsi murni penghasil bucket grafik di `lib/finance/chart.ts`:
    - `generateDayBuckets(anchor)`: 7 bucket harian (Senin s.d. Minggu).
@@ -77,7 +102,7 @@ Fase 3 (Langkah 5a Bugfix): Perbaikan kegagalan tombol "Ya, Hapus" pada dialog k
 - Verifikasi: lint, typecheck, 83 tests Vitest, dan build produksi Next.js 16 (webpack) lulus 100%.
 
 ## Tugas Berikutnya
-Fase 5: Langkah 1 (UI komponen grafik batang dan integrasi pemilih periode di `/grafik` serta kartu grafik ringkas di Beranda).
+Fase 5: Langkah 2 (Interaksi klik batang grafik menuju filter /transaksi dan kartu grafik ringkas di Beranda).
 
 ## Catatan Penting
 - Penanganan Header Content-Type pada Mutasi:
@@ -106,3 +131,4 @@ Fase 5: Langkah 1 (UI komponen grafik batang dan integrasi pemilih periode di `/
 - Pengujian manual interaksi form tambah transaksi berulang kali di peramban (memastikan form selalu segar dan tombol kembali aktif setelah submit).
 - Pengujian manual interaksi kartu ringkasan dan kartu saldo di Beranda (uji tombol Bulan ini, Minggu ini, Pilih tanggal kustom, serta tombol Coba lagi saat offline/error).
 - Pengujian manual bagian Transaksi Terbaru di Beranda (kondisi pengguna baru "Catat pemasukan pertamamu", kondisi terisi 5 transaksi di mobile & desktop, serta tombol Coba lagi saat offline).
+- Pengujian manual visualisasi grafik di `/grafik` (perpindahan tab Harian, Mingguan, Bulanan, Tahunan; tombol Sebelumnya/Berikutnya; tooltip; dan kondisi tanpa transaksi).
