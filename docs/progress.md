@@ -5,16 +5,23 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 ## Status Fase
 - [x] Fase 1: Setup proyek, koneksi Supabase, login Google
 - [x] Fase 2: Skema database (Drizzle) dan aturan saldo
-- [ ] Fase 3: Transaksi (tambah, edit, hapus, daftar, filter, cari)
+- [x] Fase 3: Transaksi (tambah, edit, hapus, daftar, filter, cari)
 - [ ] Fase 4: Beranda (saldo dan ringkasan periode)
 - [ ] Fase 5: Grafik
 - [ ] Fase 6: Export Excel/PDF
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 4: Beranda (Saldo dan ringkasan periode)
+Fase 4: Langkah 1 (UI Kartu Saldo dan ringkasan periode di Beranda)
 
 ## Terakhir Selesai
+Fase 4 (Langkah 0):
+1. Pembuatan skema validasi `summaryQuerySchema` dan fungsi agregasi `getPeriodSummary` di `lib/finance/summary.ts`. Menghitung `totalIncome`, `totalExpense`, dan `difference = totalIncome - totalExpense` secara langsung di database menggunakan `SUM` dan `COALESCE`, dengan filter wajib `user_id = user.id` dan tanggal inklusif `from` s.d. `to`. Nilai berupa integer Rupiah (number).
+2. Pembuatan route handler `GET /api/summary` di `app/api/summary/route.ts` dengan pertahanan otentikasi di level server (401 jika belum login), validasi Zod (400 untuk input tidak valid atau `from > to`), dan format respons seragam `{ data: { totalIncome, totalExpense, difference } }`.
+3. Unit test Vitest di `lib/finance/summary.test.ts` (8 test case lulus: parameter valid, tanggal masa depan diterima, rentang 1 hari, from setelah to ditolak, parameter hilang ditolak, format non-ISO ditolak, dan kalender invalid ditolak). Total test proyek menjadi 116 tests lulus.
+4. Dokumentasi kontrak API pada `docs/api.md`.
+5. Verifikasi: lint, typecheck, 116 tests Vitest, dan build produksi Next.js 16 webpack lulus 100%.
+
 Fase 3 (Langkah 5b Perbaikan State Mode Periode "Pilih Tanggal"):
 1. Terbukti Dugaan Bug: Sebelumnya `activePeriodMode` diturunkan secara pasif dari `filters.from` dan `filters.to` pada setiap siklus render. Saat "Pilih tanggal" diklik, handler mengisi default `from/to` dengan nilai bulan ini, sehingga mode langsung terhitung kembali sebagai "month" dan input tanggal kustom tertutup.
 2. Solusi & Perbaikan:
