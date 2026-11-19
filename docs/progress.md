@@ -12,9 +12,29 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 4: Langkah 1 (UI Kartu Saldo dan ringkasan periode di Beranda)
+Fase 4: Langkah 2 (Lima transaksi terbaru dengan tautan "Lihat semua", kondisi pengguna baru, dan data kosong di Beranda)
 
 ## Terakhir Selesai
+Fase 4 (Perbaikan Prerender Date.now() / connection() Server Component):
+- Penyebab: Server Component `HomeContent` (`/`) dan `AkunContent` (`/akun`) memanggil `supabase.auth.getUser()` (yang memeriksa timestamp token via `Date.now()`) sebelum ada deklarasi akses data dinamis saat Next.js 16 mengevaluasi prerender static HTML di dalam Suspense.
+- Perbaikan: Menambahkan `await connection()` dari `next/server` di awal eksekusi `HomeContent` dan `AkunContent` di dalam batas `<Suspense>`, sehingga Next.js secara resmi menunda evaluasi auth dinamis ke request-time saat stream content.
+
+Fase 4 (Langkah 1 Perbaikan Dev Prerender Date.now()):
+- Penyebab: Pemanggilan `todayWIB()` di dalam client component `app/(app)/HomeSummarySection.tsx` dievaluasi saat prerendering SSR, memicu peringatan Next.js 16 terkait nilai tidak stabil `Date.now()`.
+- Perbaikan: Menggunakan `useSyncExternalStore` dengan snapshot SSR string kosong `""` dan snapshot client `todayWIB()`, sehingga evaluasi waktu murni ditunda ke browser client tanpa memicu peringatan SSR atau cascading render.
+
+Fase 4 (Langkah 1):
+1. Pembuatan komponen `HomeSummarySection` di `app/(app)/HomeSummarySection.tsx`:
+   - Kartu Saldo: memanggil `GET /api/balance`, menampilkan total saldo seluruh riwayat akun tanpa terpengaruh pemilih periode. Format `formatRupiah`, angka tabular, status memuat, dan status error dengan tombol "Coba lagi".
+   - Kartu Ringkasan Periode: memanggil `GET /api/summary?from=&to=` dengan pemilih periode (Bulan ini sebagai default, Minggu ini, Pilih tanggal). State periode eksplisit `periodMode: "bulan" | "minggu" | "kustom"`, disimpan lokal (tidak di URL).
+   - Menghitung rentang tanggal menggunakan fungsi murni `monthRange` (tanggal 1 s.d. akhir bulan) dan `weekRange` (Senin s.d. Minggu kalender penuh) berpatokan pada `todayWIB()`.
+   - Mode kustom menyediakan input tanggal Dari dan Sampai dengan validasi peringatan ("Isi kedua tanggal." / "Tanggal Dari tidak boleh setelah Sampai."). Request API hanya dikirim ketika kedua tanggal valid.
+   - Menampilkan Pemasukan (`+` hijau), Pengeluaran (`−` merah), dan Selisih dengan label dinamis ("Selisih bulan ini", "Selisih minggu ini", atau "Selisih periode") serta tanda `+` / `−` / Rp 0.
+   - Penanganan status loading dan error secara terpisah untuk kedua kartu dengan tombol retry independen dan pemulihan status loading di `finally`.
+   - Layout responsif: mobile-first 1 kolom bertumpuk, desktop (lg ke atas) 2 kolom sejajar, min target sentuh 44px, dan 100% menggunakan token warna Tailwind.
+2. Integrasi ke Halaman Beranda (`app/(app)/page.tsx`): memasang `<HomeSummarySection />` di dalam layout Beranda.
+3. Verifikasi: lint bersih (0 error/warning), typecheck (`tsc --noEmit`) lulus, 116 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100%.
+
 Fase 4 (Langkah 0):
 1. Pembuatan skema validasi `summaryQuerySchema` dan fungsi agregasi `getPeriodSummary` di `lib/finance/summary.ts`. Menghitung `totalIncome`, `totalExpense`, dan `difference = totalIncome - totalExpense` secara langsung di database menggunakan `SUM` dan `COALESCE`, dengan filter wajib `user_id = user.id` dan tanggal inklusif `from` s.d. `to`. Nilai berupa integer Rupiah (number).
 2. Pembuatan route handler `GET /api/summary` di `app/api/summary/route.ts` dengan pertahanan otentikasi di level server (401 jika belum login), validasi Zod (400 untuk input tidak valid atau `from > to`), dan format respons seragam `{ data: { totalIncome, totalExpense, difference } }`.
@@ -54,7 +74,7 @@ Fase 3 (Langkah 5a Bugfix): Perbaikan kegagalan tombol "Ya, Hapus" pada dialog k
 - Verifikasi: lint, typecheck, 83 tests Vitest, dan build produksi Next.js 16 (webpack) lulus 100%.
 
 ## Tugas Berikutnya
-Fase 3: Langkah 5b (Filter jenis transaksi & rentang tanggal, serta fitur pencarian transaksi).
+Fase 4: Langkah 2 (Lima transaksi terbaru dengan tautan "Lihat semua", penanganan pengguna baru dan data kosong).
 
 ## Catatan Penting
 - Penanganan Header Content-Type pada Mutasi:
@@ -81,3 +101,4 @@ Fase 3: Langkah 5b (Filter jenis transaksi & rentang tanggal, serta fitur pencar
 ## Masalah Terbuka
 - Developer perlu menjalankan `npm run db:migrate` setelah mengisi `DATABASE_MIGRATION_URL` di `.env.local`.
 - Pengujian manual interaksi form tambah transaksi berulang kali di peramban (memastikan form selalu segar dan tombol kembali aktif setelah submit).
+- Pengujian manual interaksi kartu ringkasan dan kartu saldo di Beranda (uji tombol Bulan ini, Minggu ini, Pilih tanggal kustom, serta tombol Coba lagi saat offline/error).
