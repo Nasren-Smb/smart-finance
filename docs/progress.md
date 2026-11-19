@@ -12,9 +12,21 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 4: Langkah 2 (Lima transaksi terbaru dengan tautan "Lihat semua", kondisi pengguna baru, dan data kosong di Beranda)
+Fase 4: Langkah 3 (Tes menyeluruh dan verifikasi Fase 4)
 
 ## Terakhir Selesai
+Fase 4 (Langkah 2):
+1. Pembuatan komponen `HomeRecentTransactions` di `app/(app)/HomeRecentTransactions.tsx`:
+   - Memanggil `GET /api/transactions` tanpa filter/cursor dan mengambil 5 transaksi pertama.
+   - Menampilkan tanggal (`formatTanggal`), deskripsi, dan nominal tabular (`formatRupiah`) dengan tanda `+` (hijau) atau `−` (merah).
+   - Tautan "Lihat semua" menuju `/transaksi`.
+   - Menangani kondisi pengguna baru dan data kosong dengan ajakan ramah "Catat pemasukan pertamamu" dan tombol menuju `/transaksi/baru`.
+   - Status memuat dan penanganan error mandiri dengan tombol "Coba lagi" (reset loading di blok `finally`).
+   - Sinkronisasi navigasi Cache Components Next.js 16 via event listener `window.focus` sehingga Saldo, ringkasan, dan daftar transaksi terbaru selalu disegarkan saat pengguna kembali ke Beranda setelah menambah/mengedit transaksi.
+   - Responsif: kartu ringkas di mobile, tabel ringkas di desktop (lg ke atas), target sentuh min 44px, token Tailwind murni.
+2. Integrasi ke Halaman Beranda (`app/(app)/page.tsx`): memasang `<HomeRecentTransactions />` di bawah `<HomeSummarySection />`.
+3. Verifikasi: lint bersih (0 error/warning), typecheck lulus, 116 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100% tanpa error prerender `Date.now()`.
+
 Fase 4 (Perbaikan Prerender Date.now() / connection() Server Component):
 - Penyebab: Server Component `HomeContent` (`/`) dan `AkunContent` (`/akun`) memanggil `supabase.auth.getUser()` (yang memeriksa timestamp token via `Date.now()`) sebelum ada deklarasi akses data dinamis saat Next.js 16 mengevaluasi prerender static HTML di dalam Suspense.
 - Perbaikan: Menambahkan `await connection()` dari `next/server` di awal eksekusi `HomeContent` dan `AkunContent` di dalam batas `<Suspense>`, sehingga Next.js secara resmi menunda evaluasi auth dinamis ke request-time saat stream content.
@@ -74,7 +86,7 @@ Fase 3 (Langkah 5a Bugfix): Perbaikan kegagalan tombol "Ya, Hapus" pada dialog k
 - Verifikasi: lint, typecheck, 83 tests Vitest, dan build produksi Next.js 16 (webpack) lulus 100%.
 
 ## Tugas Berikutnya
-Fase 4: Langkah 2 (Lima transaksi terbaru dengan tautan "Lihat semua", penanganan pengguna baru dan data kosong).
+Fase 4: Langkah 3 (Tes menyeluruh dan verifikasi akhir Fase 4).
 
 ## Catatan Penting
 - Penanganan Header Content-Type pada Mutasi:
@@ -102,3 +114,4 @@ Fase 4: Langkah 2 (Lima transaksi terbaru dengan tautan "Lihat semua", penangana
 - Developer perlu menjalankan `npm run db:migrate` setelah mengisi `DATABASE_MIGRATION_URL` di `.env.local`.
 - Pengujian manual interaksi form tambah transaksi berulang kali di peramban (memastikan form selalu segar dan tombol kembali aktif setelah submit).
 - Pengujian manual interaksi kartu ringkasan dan kartu saldo di Beranda (uji tombol Bulan ini, Minggu ini, Pilih tanggal kustom, serta tombol Coba lagi saat offline/error).
+- Pengujian manual bagian Transaksi Terbaru di Beranda (kondisi pengguna baru "Catat pemasukan pertamamu", kondisi terisi 5 transaksi di mobile & desktop, serta tombol Coba lagi saat offline).

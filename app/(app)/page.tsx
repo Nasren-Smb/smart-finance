@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { HomeSummarySection } from "./HomeSummarySection";
+import { HomeRecentTransactions } from "./HomeRecentTransactions";
 
 export const instant = false;
 
@@ -49,6 +50,8 @@ async function HomeContent() {
       </div>
 
       <HomeSummarySection />
+
+      <HomeRecentTransactions />
 
       {/* Footer khusus tampilan HP hanya di akhir Beranda */}
       <footer className="py-6 text-center text-xs text-text-muted lg:hidden">

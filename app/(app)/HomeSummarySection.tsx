@@ -208,6 +208,18 @@ export function HomeSummarySection() {
     }
   }, [activeRange]);
 
+  // Handle focus window untuk memuat ulang Saldo dan Ringkasan saat kembali ke Beranda di bawah Cache Components Next.js 16
+  useEffect(() => {
+    const onFocus = () => {
+      setBalanceReloadKey((k) => k + 1);
+      setSummaryReloadKey((k) => k + 1);
+    };
+    window.addEventListener("focus", onFocus);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
   // Label selisih dinamis
   let differenceLabel = "Selisih periode";
   if (periodMode === "bulan") {
