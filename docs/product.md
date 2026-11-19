@@ -51,7 +51,7 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
 - **Isi**: Total pemasukan, total pengeluaran, dan selisih (pemasukan - pengeluaran) khusus periode tersebut.
 - **Pemisahan di Beranda**: Saldo (seluruh riwayat) dan Selisih periode wajib dipisah dengan label jelas agar tidak tertukar.
 - **Zona Waktu**: WIB (Asia/Jakarta) untuk semua penentuan hari, minggu, dan bulan.
-- **Minggu**: Dimulai hari SENIN. Jika melewati pergantian bulan, minggu dipotong di batas bulan. Jumlah seluruh minggu harus sama dengan total bulan tanpa hitung ganda.
+- **Minggu**: Dimulai hari SENIN sampai MINGGU (minggu kalender penuh), tidak dipotong di batas bulan pada kartu ringkasan Beranda dan filter transaksi. Pada visualisasi batang grafik (Fase 5), minggu disajikan proporsional terhadap bulan tanpa hitung ganda.
 
 ## 7. Grafik
 - Menampilkan batang pemasukan dan pengeluaran berdampingan menggunakan satu komponen yang dipakai ulang.

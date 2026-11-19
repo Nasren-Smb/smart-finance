@@ -40,7 +40,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | `vite` | `^8.3.8` |
 | `eslint` | `^9` |
 | `eslint-config-next` | `16.4.6` |
-| `@types/node` | `^20` |
+| `@types/node` | `^24` |
 | `@types/react` | `^19` |
 | `@types/react-dom` | `^19` |
 
