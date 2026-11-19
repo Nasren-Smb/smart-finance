@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
+export const instant = false;
+
 async function HomeContent() {
   const supabase = await createClient();
   const {

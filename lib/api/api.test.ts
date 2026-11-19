@@ -52,6 +52,18 @@ describe("lib/api/query.ts", () => {
       expect(parsed.success).toBe(true);
     });
 
+    it("menerima rentang tanggal bulan penuh (from=2026-11-01 dan to=2026-11-30) meskipun hari ini di tengah bulan", () => {
+      const parsed = transactionQuerySchema.safeParse({
+        from: "2026-11-01",
+        to: "2026-11-30",
+      });
+      expect(parsed.success).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.from).toBe("2026-11-01");
+        expect(parsed.data.to).toBe("2026-11-30");
+      }
+    });
+
     it("menolak jika from lebih besar daripada to", () => {
       const parsed = transactionQuerySchema.safeParse({
         from: "2026-11-20",
