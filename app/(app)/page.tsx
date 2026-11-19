@@ -1,11 +1,15 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { HomeSummarySection } from "./HomeSummarySection";
+import { HomeRecentTransactions } from "./HomeRecentTransactions";
 
 export const instant = false;
 
 async function HomeContent() {
+  await connection();
   const supabase = await createClient();
   const {
     data: { user },
@@ -45,11 +49,9 @@ async function HomeContent() {
         <h1 className="text-2xl font-bold text-text-main">Beranda</h1>
       </div>
 
-      <div className="rounded-2xl bg-surface p-6 border border-line">
-        <p className="text-text-secondary text-sm">
-          Konten Beranda (Kartu Saldo, ringkasan periode, grafik, dan transaksi terbaru akan ditampilkan di sini pada fase berikutnya).
-        </p>
-      </div>
+      <HomeSummarySection />
+
+      <HomeRecentTransactions />
 
       {/* Footer khusus tampilan HP hanya di akhir Beranda */}
       <footer className="py-6 text-center text-xs text-text-muted lg:hidden">

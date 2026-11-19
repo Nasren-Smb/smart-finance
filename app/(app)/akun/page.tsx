@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 async function AkunContent() {
+  await connection();
   const supabase = await createClient();
   const {
     data: { user },
