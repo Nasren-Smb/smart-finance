@@ -6,15 +6,38 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [x] Fase 1: Setup proyek, koneksi Supabase, login Google
 - [x] Fase 2: Skema database (Drizzle) dan aturan saldo
 - [x] Fase 3: Transaksi (tambah, edit, hapus, daftar, filter, cari)
-- [ ] Fase 4: Beranda (saldo dan ringkasan periode)
+- [x] Fase 4: Beranda (saldo dan ringkasan periode)
 - [ ] Fase 5: Grafik
 - [ ] Fase 6: Export Excel/PDF
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 4: Langkah 1 (UI Kartu Saldo dan ringkasan periode di Beranda)
+Fase 5: Langkah 1 (Komponen UI visualisasi grafik batang pemasukan dan pengeluaran)
 
 ## Terakhir Selesai
+Fase 5 (Langkah 0):
+1. Pembuatan fungsi murni penghasil bucket grafik di `lib/finance/chart.ts`:
+   - `generateDayBuckets(anchor)`: 7 bucket harian (Senin s.d. Minggu).
+   - `generateWeekBuckets(anchor)`: 4 s.d. 6 bucket mingguan dalam 1 bulan kalender, di mana minggu yang melewati batas bulan DIPOTONG di batas bulan (bucket pertama mulai tanggal 1, bucket terakhir berakhir di hari terakhir bulan). Invarian teruji: total hari seluruh bucket sama dengan total hari bulan tersebut.
+   - `generateMonthBuckets(anchor)`: 12 bucket bulanan dalam 1 tahun kalender (Januari s.d. Desember, 28/29 hari di Februari).
+2. Pembuatan skema validasi `chartQuerySchema` di `lib/finance/chart.ts`:
+   - `level`: wajib ("day" | "week" | "month" | "year").
+   - `anchor`: wajib untuk day, week, month (YYYY-MM-DD valid, tanggal masa depan diterima); diabaikan untuk year.
+3. Pembuatan fungsi agregasi database `getChartData` di `lib/finance/chart-db.ts`:
+   - Filter wajib `user_id = user.id`.
+   - Menggunakan `SUM` dan `GROUP BY` database efisien dalam satu query agregasi, bukan query per-bucket dan bukan looping data di memori JavaScript.
+   - Format respons `{ level, buckets: [{ from, to, income, expense }] }`, angka integer Rupiah, dan bucket kosong mengembalikan 0 (kecuali level year yang hanya memuat tahun dengan data transaksi, urut naik).
+4. Pembuatan endpoint `GET /api/chart` di `app/api/chart/route.ts` dengan perlindungan otentikasi server (401 jika belum login) dan penanganan validasi query (400).
+5. Unit test Vitest di `lib/finance/chart.test.ts` (18 test case lulus 100%: 7 hari Senin–Minggu, pemotongan minggu batas bulan pada Nov 2026, Feb kabisat 2028, Feb non-kabisat 2026, Maret 2026, Feb 2027, 12 bulan, dan validasi Zod). Total 134 unit test lulus.
+6. Dokumentasi kontrak API pada `docs/api.md`.
+7. Verifikasi: lint bersih (0 error/warning), typecheck lulus, 134 tests Vitest lulus, dan build produksi Next.js 16 (webpack) lulus 100%.
+
+Fase 4 (Selesai Penuh - Langkah 0 s.d. 3):
+- Langkah 0: Endpoint `GET /api/summary`, skema validasi query, agregasi database, unit test.
+- Langkah 1: Kartu Saldo (riwayat penuh dari `/api/balance`) dan kartu Ringkasan Periode (`GET /api/summary`) dengan pemilih periode ("Bulan ini", "Minggu ini", "Pilih tanggal"). Penanganan Date.now() SSR via `useSyncExternalStore`.
+- Langkah 2: Bagian 5 Transaksi Terbaru (`HomeRecentTransactions`), tautan "Lihat semua", penanganan pengguna baru ("Catat pemasukan pertamamu"), serta penyegaran state saat kembali ke Beranda (`window.focus`).
+- Langkah 3: Penanganan SSR prerender `Date.now()` pada Server Component `/` dan `/akun` via `await connection()` dari `next/server` sebelum pemanggilan auth Supabase. Audit dan penyelarasan `docs/api.md`, `docs/product.md`, `docs/tech-stack.md`, dan config.
+
 Fase 4 (Langkah 0):
 1. Pembuatan skema validasi `summaryQuerySchema` dan fungsi agregasi `getPeriodSummary` di `lib/finance/summary.ts`. Menghitung `totalIncome`, `totalExpense`, dan `difference = totalIncome - totalExpense` secara langsung di database menggunakan `SUM` dan `COALESCE`, dengan filter wajib `user_id = user.id` dan tanggal inklusif `from` s.d. `to`. Nilai berupa integer Rupiah (number).
 2. Pembuatan route handler `GET /api/summary` di `app/api/summary/route.ts` dengan pertahanan otentikasi di level server (401 jika belum login), validasi Zod (400 untuk input tidak valid atau `from > to`), dan format respons seragam `{ data: { totalIncome, totalExpense, difference } }`.
@@ -54,7 +77,7 @@ Fase 3 (Langkah 5a Bugfix): Perbaikan kegagalan tombol "Ya, Hapus" pada dialog k
 - Verifikasi: lint, typecheck, 83 tests Vitest, dan build produksi Next.js 16 (webpack) lulus 100%.
 
 ## Tugas Berikutnya
-Fase 3: Langkah 5b (Filter jenis transaksi & rentang tanggal, serta fitur pencarian transaksi).
+Fase 5: Langkah 1 (UI komponen grafik batang dan integrasi pemilih periode di `/grafik` serta kartu grafik ringkas di Beranda).
 
 ## Catatan Penting
 - Penanganan Header Content-Type pada Mutasi:
