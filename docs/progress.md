@@ -6,15 +6,22 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [x] Fase 1: Setup proyek, koneksi Supabase, login Google
 - [x] Fase 2: Skema database (Drizzle) dan aturan saldo
 - [x] Fase 3: Transaksi (tambah, edit, hapus, daftar, filter, cari)
-- [ ] Fase 4: Beranda (saldo dan ringkasan periode)
+- [x] Fase 4: Beranda (saldo dan ringkasan periode)
 - [ ] Fase 5: Grafik
 - [ ] Fase 6: Export Excel/PDF
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 4: Langkah 3 (Tes menyeluruh dan verifikasi Fase 4)
+Fase 5: Grafik (Visualisasi data transaksi batang pemasukan dan pengeluaran)
 
 ## Terakhir Selesai
+Fase 4 (Langkah 3 Audit & Sinkronisasi Dokumen/Config):
+1. Audit kontrak `GET /api/summary` di `docs/api.md`: telah selaras penuh dengan kode (query `from`, `to`, respons `{ data: { totalIncome, totalExpense, difference } }`, error `400`, `401`, `500`).
+2. Audit `package.json`, `drizzle.config.ts`, dan `vitest.config.mts`: field name terverifikasi `"smart-finance"`, `drizzle.config.ts` memuat `.env.local` via `loadEnvConfig(process.cwd())` dari `@next/env`, dan konfigurasi path alias `@` pada `vitest.config.mts` berfungsi tanpa masalah.
+3. Sinkronisasi `docs/tech-stack.md`: memperbarui versi dependensi `@types/node` menjadi `^24` sesuai commit di branch `main`.
+4. Sinkronisasi `docs/product.md`: menyelaraskan definisi Minggu kalender penuh (Senin s.d. Minggu) untuk Beranda dan filter transaksi.
+5. Verifikasi: lint, typecheck, 116 tests Vitest, dan build produksi Next.js 16 (webpack) lulus 100%.
+
 Fase 4 (Langkah 2):
 1. Pembuatan komponen `HomeRecentTransactions` di `app/(app)/HomeRecentTransactions.tsx`:
    - Memanggil `GET /api/transactions` tanpa filter/cursor dan mengambil 5 transaksi pertama.
@@ -86,7 +93,7 @@ Fase 3 (Langkah 5a Bugfix): Perbaikan kegagalan tombol "Ya, Hapus" pada dialog k
 - Verifikasi: lint, typecheck, 83 tests Vitest, dan build produksi Next.js 16 (webpack) lulus 100%.
 
 ## Tugas Berikutnya
-Fase 4: Langkah 3 (Tes menyeluruh dan verifikasi akhir Fase 4).
+Fase 5: Grafik (Visualisasi batang pemasukan dan pengeluaran per periode).
 
 ## Catatan Penting
 - Penanganan Header Content-Type pada Mutasi:
