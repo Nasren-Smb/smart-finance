@@ -1,14 +1,24 @@
+import { Suspense } from "react";
+import { connection } from "next/server";
+import { GrafikContent } from "./GrafikContent";
+
+async function GrafikPageLoader() {
+  await connection();
+  return <GrafikContent />;
+}
+
 export default function GrafikPage() {
   return (
-    <div className="flex flex-col gap-6 w-full max-w-4xl">
-      <div className="pb-2 border-b border-line">
-        <h1 className="text-xl lg:text-2xl font-bold text-text-main">Grafik</h1>
-      </div>
-      <div className="rounded-2xl bg-surface p-6 border border-line">
-        <p className="text-text-secondary text-sm">
-          Visualisasi grafik pemasukan dan pengeluaran akan ditampilkan di sini pada fase 5.
-        </p>
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex flex-col gap-6 w-full max-w-4xl animate-pulse">
+          <div className="h-8 w-32 bg-surface rounded-xl border border-line" />
+          <div className="h-12 w-64 bg-surface rounded-xl border border-line" />
+          <div className="h-80 bg-surface rounded-2xl border border-line" />
+        </div>
+      }
+    >
+      <GrafikPageLoader />
+    </Suspense>
   );
 }

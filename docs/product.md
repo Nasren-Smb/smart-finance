@@ -54,14 +54,15 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
 - **Minggu**: Dimulai hari SENIN sampai MINGGU (minggu kalender penuh), tidak dipotong di batas bulan pada kartu ringkasan Beranda dan filter transaksi. Pada visualisasi batang grafik (Fase 5), minggu disajikan proporsional terhadap bulan tanpa hitung ganda.
 
 ## 7. Grafik
-- Menampilkan batang pemasukan dan pengeluaran berdampingan menggunakan satu komponen yang dipakai ulang.
+- Menampilkan batang pemasukan dan pengeluaran berdampingan menggunakan satu komponen yang dipakai ulang (`TransactionBarChart`).
 - **Skala Periode**:
-  - Harian: 7 batang (hari dalam 1 minggu).
-  - Mingguan: 4-5 batang (minggu dalam 1 bulan).
-  - Bulanan: 12 batang (bulan dalam 1 tahun).
-  - Tahunan: Semua tahun yang memiliki data.
+  - Harian (`day`): 7 batang (hari Senin sampai Minggu dalam 1 minggu kalender penuh).
+  - Mingguan (`week`): 4-6 batang (minggu dalam 1 bulan kalender, di mana minggu yang melewati batas bulan dipotong di batas bulan agar proporsional tanpa hitung ganda).
+  - Bulanan (`month`): 12 batang (bulan Januari sampai Desember dalam 1 tahun kalender).
+  - Tahunan (`year`): Semua tahun yang memiliki riwayat transaksi (diurutkan naik).
 - Periode default adalah periode yang sedang berjalan.
-- Interaksi: Klik atau sentuh batang akan membuka halaman Transaksi dengan filter periode tersebut.
+- **Interaksi**: Klik atau sentuh kolom batang bucket akan membuka halaman Transaksi (`/transaksi?from=...&to=...`) dengan filter periode bucket tersebut.
+- **Grafik Ringkas di Beranda**: Kartu "Grafik minggu ini" menampilkan visualisasi 7 batang harian (Senin–Minggu) minggu berjalan dengan tautan "Lihat grafik lengkap" menuju halaman `/grafik`.
 - Dilarang membuat grafik porsi per kategori.
 
 ## 8. Pencarian, Filter, Daftar Transaksi, dan Export

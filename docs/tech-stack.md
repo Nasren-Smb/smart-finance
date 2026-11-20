@@ -18,7 +18,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | Layanan Database & Auth | Supabase (PostgreSQL dan Auth login Google saja) | Terpasang |
 | Hosting | Vercel (serverless; belum dideploy) | Terpasang |
 | Version Control | Git / GitHub (dikelola developer secara manual) | Terpasang |
-| Visualisasi Data | Library chart (usulan Recharts, wajib cek kompatibilitas React) | Belum diputuskan (fase 5) |
+| Visualisasi Data | Recharts | Terpasang |
 | Export Dokumen | Library export Excel dan PDF | Belum diputuskan (fase 6) |
 
 ## 2. Versi Dependensi (package.json)
@@ -32,6 +32,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | `drizzle-orm` | `^0.45.4` |
 | `postgres` | `^4.1.1` |
 | `zod` | `^4.6.7` |
+| `recharts` | `3.11.0` |
 | `tailwindcss` | `4.3.3` |
 | `@tailwindcss/turbopack` | `4.3.3` |
 | `typescript` | `^5` |
