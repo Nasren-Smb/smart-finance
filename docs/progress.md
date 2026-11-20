@@ -7,121 +7,42 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [x] Fase 2: Skema database (Drizzle) dan aturan saldo
 - [x] Fase 3: Transaksi (tambah, edit, hapus, daftar, filter, cari)
 - [x] Fase 4: Beranda (saldo dan ringkasan periode)
-- [ ] Fase 5: Grafik
+- [x] Fase 5: Grafik
 - [ ] Fase 6: Export Excel/PDF
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 5: Langkah 3 (Tes menyeluruh dan verifikasi akhir Fase 5)
+Fase 6: Langkah 0 (Persiapan dan pemilihan library export Excel & PDF)
 
 ## Terakhir Selesai
-Fase 5 (Langkah 2):
-1. Pembuatan fungsi murni `buildBucketTransactionUrl` di `lib/finance/chart-nav.ts`:
-   - Membentuk URL `/transaksi?from=...&to=...` menggunakan `buildSearchString` yang sudah ada tanpa menulis nama parameter secara manual.
-   - 3 unit test Vitest baru di `lib/finance/chart-nav.test.ts` (bucket satu hari, rentang melewati bulan, dan satu tahun penuh) yang terverifikasi terbaca dengan benar oleh `parseFilters`. Total 162 unit test lulus 100%.
-2. Dukungan klik pada `components/TransactionBarChart.tsx`:
-   - Menerima prop opsional `onBucketClick?: (bucket: ChartBucket) => void` dan `height?: number` (default 260px).
-   - Mendeteksi klik pada seluruh kolom bucket (via `onClick` pada `BarChart` membaca `activeTooltipIndex` / `activeIndex`) sehingga bucket kecil atau bernilai 0 tetap mudah diketuk, ditambah fallback `onClick` langsung pada `Bar`.
-   - Menambahkan petunjuk teks kecil "Ketuk batang untuk melihat transaksinya" jika prop `onBucketClick` diberikan.
-   - Keterbatasan keyboard Recharts 3.11.0: `keyboardEventsMiddleware` pada Recharts 3.11 hanya menangani navigasi visual tooltip (panah kiri/kanan dan enter untuk toggle lock tooltip), tetapi tidak mengekspos callback klik aksi domain ke komponen wrapper tanpa hack DOM; oleh karena itu aksi klik navigasi utama dilayani melalui pointer/touch pada seluruh kolom bar.
-3. Integrasi klik pada halaman `/grafik` (`app/(app)/grafik/GrafikContent.tsx`):
-   - Menavigasikan pengguna ke URL `/transaksi` menggunakan `router.push(buildBucketTransactionUrl(bucket))` tanpa reload penuh saat kolom bucket diklik.
-4. Pembuatan komponen kartu grafik ringkas Beranda `app/(app)/HomeChartSection.tsx`:
-   - Judul "Grafik minggu ini" dengan 7 batang harian Senin sampai Minggu ber-anchor `clientToday` (`useSyncExternalStore` tanpa `Date.now()` saat render).
-   - Tautan "Lihat grafik lengkap" menuju `/grafik`.
-   - Penanganan status memuat, error mandiri dengan tombol coba lagi, AbortController, dan pesan data kosong "Belum ada transaksi minggu ini" plus ajakan "Catat pemasukan pertamamu" ke `/transaksi/baru`.
-   - Sinkronisasi penyegaran data via `window.focus` di bawah Cache Components Next.js 16.
-   - Dipasang di `app/(app)/page.tsx` tepat di antara kartu ringkasan periode dan transaksi terbaru.
-5. Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus, 162 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100% tanpa error prerender `Date.now()`.
+Fase 5 (Langkah 3):
+- Audit dan sinkronisasi dokumentasi proyek setelah Fase 5:
+  - `docs/api.md`: Verifikasi kontrak `GET /api/chart` (query `level` & `anchor`, respons sukses `{ level, buckets }`, error 400 VALIDATION_ERROR, 401 UNAUTHORIZED, 500).
+  - `docs/product.md`: Penyelarasan definisi grafik (empat tingkat tampilan, pemotongan minggu di batas bulan, interaksi klik batang ke `/transaksi`, dan grafik ringkas Beranda).
+  - `docs/tech-stack.md`: Verifikasi Recharts 3.11.0 tercatat final sebagai library visualisasi data.
+  - `docs/progress.md`: Penyelesaian Fase 5 (Langkah 0 s.d. 3), pencatatan keterbatasan keyboard Recharts 3.11.0, peringkasan riwayat langkah lama, dan penetapan Fase 6 sebagai fokus berikutnya.
+- Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus, 162 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100%.
 
-Fase 5 (Langkah 1):
-1. Instalasi library visualisasi data: `recharts@3.11.0` (kompatibel penuh dengan React 19).
-2. Pembuatan helper dan fungsi murni navigasi/label grafik di `lib/finance/chart-nav.ts`:
-   - `shiftAnchor`: pergeseran anchor per level (day: +/- 7 hari, week: +/- 1 bulan dengan penyesuaian akhir bulan, month: +/- 1 tahun dengan penyesuaian 29 Feb kabisat, year: tetap).
-   - `canGoNext`: pembatasan tombol "Berikutnya" jika periode berikutnya dimulai setelah hari ini WIB.
-   - `formatBucketLabel`: format label sumbu X (day: "Sen 16", week: "1–2 Nov" / "1 Nov", month: "Jan" s.d. "Des", year: "2026").
-   - `formatPeriodTitle`: format judul periode dinamis ("16–22 Nov 2026", "30 Nov – 6 Des 2026", "November 2026", "2026", "Semua tahun").
-   - `formatRupiahRingkas`: pemformatan sumbu Y ringkas ("0", "500 rb", "1 jt", "1,5 jt", "1 M").
-3. Unit test Vitest di `lib/finance/chart-nav.test.ts` (25 test case lulus 100%, total 159 tests proyek lulus).
-4. Pembuatan komponen grafik batang yang dipakai ulang `components/TransactionBarChart.tsx`:
-   - Batang Pemasukan (`var(--color-income)`) dan Pengeluaran (`var(--color-expense)`) berdampingan per bucket.
-   - Legenda bertanda `+` dan `−` dengan label jelas.
-   - Tooltip interaktif memformat nominal lengkap Rupiah tabular.
-   - Sumbu Y berformat ringkas, tinggi responsif 260px.
-   - Mount hydration aman via `useSyncExternalStore` tanpa peringatan rendering SSR.
-5. Pembuatan halaman `/grafik` di `app/(app)/grafik/page.tsx` & `GrafikContent.tsx`:
-   - Empat tab tingkat tampilan: "Harian" (default), "Mingguan", "Bulanan", "Tahunan".
-   - Tombol navigasi "Sebelumnya" dan "Berikutnya" (dinonaktifkan jika melewati hari ini).
-   - Penanganan `AbortController` saat klik cepat.
-   - Status memuat, status gagal muat dengan tombol coba lagi, dan tampilan data kosong "Belum ada transaksi di periode ini".
-   - Sinkronisasi penyegaran data via `window.focus` di bawah Cache Components Next.js 16.
-   - Server Component loader dibungkus `await connection()` di dalam `<Suspense>` untuk stabilitas PPR.
-6. Pembaruan `docs/tech-stack.md`: status Recharts `3.11.0` terpasang dan final.
-7. Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus, 159 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100%.
-
-Fase 5 (Langkah 0):
-1. Pembuatan fungsi murni penghasil bucket grafik di `lib/finance/chart.ts`:
-   - `generateDayBuckets(anchor)`: 7 bucket harian (Senin s.d. Minggu).
-   - `generateWeekBuckets(anchor)`: 4 s.d. 6 bucket mingguan dalam 1 bulan kalender, di mana minggu yang melewati batas bulan DIPOTONG di batas bulan (bucket pertama mulai tanggal 1, bucket terakhir berakhir di hari terakhir bulan). Invarian teruji: total hari seluruh bucket sama dengan total hari bulan tersebut.
-   - `generateMonthBuckets(anchor)`: 12 bucket bulanan dalam 1 tahun kalender (Januari s.d. Desember, 28/29 hari di Februari).
-2. Pembuatan skema validasi `chartQuerySchema` di `lib/finance/chart.ts`:
-   - `level`: wajib ("day" | "week" | "month" | "year").
-   - `anchor`: wajib untuk day, week, month (YYYY-MM-DD valid, tanggal masa depan diterima); diabaikan untuk year.
-3. Pembuatan fungsi agregasi database `getChartData` di `lib/finance/chart-db.ts`:
-   - Filter wajib `user_id = user.id`.
-   - Menggunakan `SUM` dan `GROUP BY` database efisien dalam satu query agregasi, bukan query per-bucket dan bukan looping data di memori JavaScript.
-   - Format respons `{ level, buckets: [{ from, to, income, expense }] }`, angka integer Rupiah, dan bucket kosong mengembalikan 0 (kecuali level year yang hanya memuat tahun dengan data transaksi, urut naik).
-4. Pembuatan endpoint `GET /api/chart` di `app/api/chart/route.ts` dengan perlindungan otentikasi server (401 jika belum login) dan penanganan validasi query (400).
-5. Unit test Vitest di `lib/finance/chart.test.ts` (18 test case lulus 100%: 7 hari Senin–Minggu, pemotongan minggu batas bulan pada Nov 2026, Feb kabisat 2028, Feb non-kabisat 2026, Maret 2026, Feb 2027, 12 bulan, dan validasi Zod). Total 134 unit test lulus.
-6. Dokumentasi kontrak API pada `docs/api.md`.
-7. Verifikasi: lint bersih (0 error/warning), typecheck lulus, 134 tests Vitest lulus, dan build produksi Next.js 16 (webpack) lulus 100%.
+Fase 5 (Selesai Penuh - Langkah 0 s.d. 3):
+- Langkah 0: Fungsi periode murni grafik (`generateDayBuckets`, `generateWeekBuckets` dengan pemotongan batas bulan, `generateMonthBuckets`), skema validasi Zod `chartQuerySchema`, fungsi agregasi database `getChartData` (filter wajib `user_id`, satu query agregasi efisien `SUM`/`GROUP BY`), dan route handler `GET /api/chart` (401 jika unauthenticated, 400 jika query tidak valid).
+- Langkah 1: Instalasi `recharts@3.11.0` (kompatibel React 19), helper navigasi & label `lib/finance/chart-nav.ts` (`shiftAnchor`, `canGoNext`, `formatBucketLabel`, `formatPeriodTitle`, `formatRupiahRingkas`), komponen grafik `components/TransactionBarChart.tsx`, dan halaman `/grafik` (4 tingkat: Harian, Mingguan, Bulanan, Tahunan; navigasi periode; handling loading, error, empty state, dan refresh `window.focus`).
+- Langkah 2: Interaksi klik batang grafik menuju filter `/transaksi?from=...&to=...` via `buildBucketTransactionUrl` (klik kolom penuh pada `BarChart` membaca `activeTooltipIndex ?? activeIndex` dan fallback `Bar`). Kartu "Grafik minggu ini" di Beranda (`HomeChartSection.tsx`) level `day` (Senin–Minggu) ber-anchor `todayWIB()` di client via `useSyncExternalStore` (bebas error prerender `Date.now()`).
+- Keterbatasan Keyboard Recharts 3.11.0: `keyboardEventsMiddleware` internal Recharts 3.11 hanya menangani navigasi visual tooltip (panah kiri/kanan dan enter untuk toggle lock tooltip), tanpa mengekspos callback klik aksi domain ke wrapper luar. Navigasi klik batang dilayani melalui pointer/touch pada seluruh kolom bar.
+- Langkah 3: Audit dokumen (`docs/api.md`, `docs/product.md`, `docs/tech-stack.md`, `docs/progress.md`) dan verifikasi akhir.
 
 Fase 4 (Selesai Penuh - Langkah 0 s.d. 3):
-- Langkah 0: Endpoint `GET /api/summary`, skema validasi query, agregasi database, unit test.
-- Langkah 1: Kartu Saldo (riwayat penuh dari `/api/balance`) dan kartu Ringkasan Periode (`GET /api/summary`) dengan pemilih periode ("Bulan ini", "Minggu ini", "Pilih tanggal"). Penanganan Date.now() SSR via `useSyncExternalStore`.
+- Langkah 0: Endpoint `GET /api/summary`, skema validasi query, agregasi database (`SUM`/`COALESCE`, filter `user_id = user.id`), unit test.
+- Langkah 1: Kartu Saldo (`/api/balance`) dan kartu Ringkasan Periode (`GET /api/summary`) dengan pemilih periode ("Bulan ini", "Minggu ini", "Pilih tanggal"). Penanganan `Date.now()` SSR via `useSyncExternalStore`.
 - Langkah 2: Bagian 5 Transaksi Terbaru (`HomeRecentTransactions`), tautan "Lihat semua", penanganan pengguna baru ("Catat pemasukan pertamamu"), serta penyegaran state saat kembali ke Beranda (`window.focus`).
-- Langkah 3: Penanganan SSR prerender `Date.now()` pada Server Component `/` dan `/akun` via `await connection()` dari `next/server` sebelum pemanggilan auth Supabase. Audit dan penyelarasan `docs/api.md`, `docs/product.md`, `docs/tech-stack.md`, dan config.
+- Langkah 3: Penanganan SSR prerender `Date.now()` pada Server Component `/` dan `/akun` via `await connection()` dari `next/server` sebelum auth Supabase. Sinkronisasi dokumen dan config.
 
-Fase 4 (Langkah 0):
-1. Pembuatan skema validasi `summaryQuerySchema` dan fungsi agregasi `getPeriodSummary` di `lib/finance/summary.ts`. Menghitung `totalIncome`, `totalExpense`, dan `difference = totalIncome - totalExpense` secara langsung di database menggunakan `SUM` dan `COALESCE`, dengan filter wajib `user_id = user.id` dan tanggal inklusif `from` s.d. `to`. Nilai berupa integer Rupiah (number).
-2. Pembuatan route handler `GET /api/summary` di `app/api/summary/route.ts` dengan pertahanan otentikasi di level server (401 jika belum login), validasi Zod (400 untuk input tidak valid atau `from > to`), dan format respons seragam `{ data: { totalIncome, totalExpense, difference } }`.
-3. Unit test Vitest di `lib/finance/summary.test.ts` (8 test case lulus: parameter valid, tanggal masa depan diterima, rentang 1 hari, from setelah to ditolak, parameter hilang ditolak, format non-ISO ditolak, dan kalender invalid ditolak). Total test proyek menjadi 116 tests lulus.
-4. Dokumentasi kontrak API pada `docs/api.md`.
-5. Verifikasi: lint, typecheck, 116 tests Vitest, dan build produksi Next.js 16 webpack lulus 100%.
-
-Fase 3 (Langkah 5b Perbaikan State Mode Periode "Pilih Tanggal"):
-1. Terbukti Dugaan Bug: Sebelumnya `activePeriodMode` diturunkan secara pasif dari `filters.from` dan `filters.to` pada setiap siklus render. Saat "Pilih tanggal" diklik, handler mengisi default `from/to` dengan nilai bulan ini, sehingga mode langsung terhitung kembali sebagai "month" dan input tanggal kustom tertutup.
-2. Solusi & Perbaikan:
-   - Mode periode dijadikan state eksplisit `periodMode: "semua" | "bulan" | "minggu" | "kustom"` di `components/TransactionFilterBar.tsx`.
-   - Dibuat fungsi murni `derivePeriodMode(filters, today)` di `lib/finance/period.ts` beserta unit test lengkapnya di `lib/finance/period.test.ts` (14 tests passed) untuk inisialisasi awal dan sinkronisasi eksternal (muat ulang, Back/Forward).
-   - Klik "Pilih tanggal" mengubah `periodMode = "kustom"`, membuka input Dari dan Sampai tanpa mengisi otomatis nilai tanggal.
-   - Penambahan pesan peringatan `Isi kedua tanggal` jika hanya salah satu tanggal kustom yang terisi.
-   - Pilihan "Bulan ini" dan "Minggu ini" diverifikasi dapat diterima API tanpa terhambat batas tanggal hari ini.
-3. Verifikasi: lint bersih (0 error/warning), typecheck lulus, 108 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100%.
-
-Fase 3 (Langkah 5b Perbaikan Filter Tanggal & Dev Recoverable Error):
-1. Investigasi & Verifikasi Skema Filter: Menghilangkan pembatasan tanggal `max={today}` pada input kustom filter agar tanggal akhir bulan atau periode masa depan kalender dapat dipilih tanpa pembatasan artificial di klien, sementara aturan masa depan tetap ditegakkan ketat pada skema mutasi transaksi.
-2. Penanganan Hydration & Recoverable Error Next.js 16 (Turbopack):
-   - Di `components/TransactionFilterBar.tsx`, inisialisasi `todayWIB()` ditangani setelah komponen terpasang di client (`mountedToday`), mengeliminasi mismatch antara waktu pre-render server dan waktu browser client.
-   - Di `app/(app)/page.tsx` (Beranda), ditambahkan `export const instant = false` untuk menonaktifkan validasi prefetch instant yang sebelumnya terhenti di level server rendering akibat percabangan `redirect()` dan pembacaan cookie otentikasi.
-3. Test Vitest & Verifikasi: Menambahkan pengujian pada `lib/api/api.test.ts` untuk memvalidasi rentang query filter bulan penuh (`from=2026-11-01` sampai `to=2026-11-30`) dan menolak `from > to`, sementara validasi `transaction_date` untuk pembuatan transaksi tetap menolak tanggal masa depan. Seluruh 108 test lulus, lint & typecheck bersih, build Next.js lulus 100%.
-
-Fase 3 (Langkah 5b):
-1. Fungsi murni periode (`lib/finance/period.ts`) dan unit test (`lib/finance/period.test.ts`): fungsi `monthRange` (bulan penuh) dan `weekRange` (Senin–Minggu penuh) dengan aritmetika murni UTC tanpa bergantung zona waktu mesin. 8 test case wajib lulus persis.
-2. Fungsi murni filter (`lib/finance/filters.ts`) dan unit test (`lib/finance/filters.test.ts`): fungsi `parseFilters`, `buildSearchString`, dan `buildApiQuery` dengan validasi Zod (type enum, from/to calendar date & from <= to, q trim maks 100 karakter), round trip stabil, dan penanganan nilai rusak tanpa melempar error.
-3. Komponen UI Filter (`components/TransactionFilterBar.tsx`): input pencarian dengan debounce 400ms dan tombol hapus teks, kontrol segmen jenis (Semua | Pemasukan | Pengeluaran), kontrol segmen periode (Semua waktu | Bulan ini | Minggu ini | Pilih tanggal) dengan input tanggal kustom (Sampai >= Dari), tombol reset filter, dan panel collapsible di mobile dengan badge filter aktif. Elemen sentuh minimal 44px.
-4. Integrasi halaman `/transaksi` (`app/(app)/transaksi/page.tsx` & `TransaksiContent.tsx`): URL sebagai single source of truth (`router.replace` tanpa scroll), boundary `<Suspense>` untuk `useSearchParams()`, `AbortController` untuk membatalkan permintaan lama saat mengetik cepat, pembedaan keadaan kosong (tanpa filter vs dengan filter), saldo global tetap terpisah dan tidak terpengaruh filter, pemulihan state loading di `finally`, serta kepatuhan penuh token warna Tailwind dan aksesibilitas screen reader (`aria-live`).
-5. Verifikasi menyeluruh: lint (0 error/warning), typecheck (`tsc --noEmit`), 102 tests Vitest lulus, dan build produksi Next.js 16 (webpack) lulus 100%.
-
-Fase 3 (Diagnosis Overlay Beranda): Analisis kandidat penyebab issue overlay dev Next.js 16.4.6 (`cacheComponents: true`, `partialPrefetching: true`) pada `app/(app)/page.tsx`. Kandidat diverifikasi terhadap dokumentasi resmi Next.js 16.
-
-Fase 3 (Langkah 5a Bugfix): Perbaikan kegagalan tombol "Ya, Hapus" pada dialog konfirmasi transaksi.
-- Penyebab: Handler `DELETE /api/transactions/[id]` mewajibkan header `Content-Type: application/json` (aturan mutasi 415), tetapi pemanggilan klien pada `app/(app)/transaksi/page.tsx` tidak menyertakan header tersebut karena tidak mengirim request body.
-- Perbaikan: Menambahkan header `Content-Type: application/json` pada pemanggilan klien `fetch(..., { method: "DELETE" })` tanpa melonggarkan keamanan server; menambahkan logging terformat `[api] <METHOD> <ROUTE> <ERROR>` (maks 200 karakter, tanpa data sensitif pengguna) pada blok 500 handler server; dan mencatat `console.error("[hapus] status", response.status)` di konsol browser untuk respons tak terduga.
-- Verifikasi: lint, typecheck, 83 tests Vitest, dan build produksi Next.js 16 (webpack) lulus 100%.
+Fase 3 (Selesai Penuh - Transaksi & Filter):
+- CRUD Transaksi: Tambah, edit, hapus (konfirmasi dialog), daftar (kartu mobile, tabel desktop), paginasi keyset cursor. Mutasi dilindungi advisory lock dan validasi saldo server.
+- Filter & Periode: Fungsi murni `period.ts` (`monthRange`, `weekRange`) dan `filters.ts` (`parseFilters`, `buildSearchString`, `buildApiQuery`). Komponen `TransactionFilterBar` (pencarian debounce, filter jenis & periode, panel mobile).
+- Perbaikan Khusus: Header `Content-Type: application/json` pada mutasi DELETE klien, mode kustom filter tanggal mandiri, dan logging aman 500 server.
 
 ## Tugas Berikutnya
-Fase 5: Langkah 2 (Interaksi klik batang grafik menuju filter /transaksi dan kartu grafik ringkas di Beranda).
+Fase 6: Export Excel dan PDF (persiapan library, kontrak data, dan antarmuka halaman /export).
 
 ## Catatan Penting
 - Penanganan Header Content-Type pada Mutasi:
