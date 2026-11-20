@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { HomeSummarySection } from "./HomeSummarySection";
+import { HomeChartSection } from "./HomeChartSection";
 import { HomeRecentTransactions } from "./HomeRecentTransactions";
 
 export const instant = false;
@@ -50,6 +51,8 @@ async function HomeContent() {
       </div>
 
       <HomeSummarySection />
+
+      <HomeChartSection />
 
       <HomeRecentTransactions />
 

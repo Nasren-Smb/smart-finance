@@ -1,5 +1,23 @@
 import { weekRange } from "./period";
 import { type ChartLevel } from "./chart";
+import { buildSearchString } from "./filters";
+
+export interface BucketDateRange {
+  from: string;
+  to: string;
+}
+
+/**
+ * Menghasilkan URL tujuan /transaksi dengan parameter query periode (?from=...&to=...)
+ * berdasarkan rentang tanggal bucket. Menggunakan fungsi buildSearchString yang ada.
+ */
+export function buildBucketTransactionUrl(bucket: BucketDateRange): string {
+  const searchStr = buildSearchString({
+    from: bucket.from,
+    to: bucket.to,
+  });
+  return `/transaksi${searchStr}`;
+}
 
 const MONTH_NAMES_SHORT = [
   "Jan",

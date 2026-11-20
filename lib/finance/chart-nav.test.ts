@@ -5,9 +5,56 @@ import {
   canGoNext,
   formatBucketLabel,
   formatPeriodTitle,
+  buildBucketTransactionUrl,
 } from "./chart-nav";
+import { parseFilters } from "./filters";
 
 describe("lib/finance/chart-nav.ts", () => {
+  describe("buildBucketTransactionUrl", () => {
+    it("menghasilkan URL untuk bucket satu hari", () => {
+      const url = buildBucketTransactionUrl({
+        from: "2026-11-19",
+        to: "2026-11-19",
+      });
+      expect(url).toBe("/transaksi?from=2026-11-19&to=2026-11-19");
+
+      // Verifikasi terbaca dengan benar oleh parseFilters
+      const parsed = parseFilters(new URLSearchParams(url.replace("/transaksi", "")));
+      expect(parsed).toEqual({
+        from: "2026-11-19",
+        to: "2026-11-19",
+      });
+    });
+
+    it("menghasilkan URL untuk bucket yang melewati batas bulan", () => {
+      const url = buildBucketTransactionUrl({
+        from: "2026-11-30",
+        to: "2026-12-06",
+      });
+      expect(url).toBe("/transaksi?from=2026-11-30&to=2026-12-06");
+
+      const parsed = parseFilters(new URLSearchParams(url.replace("/transaksi", "")));
+      expect(parsed).toEqual({
+        from: "2026-11-30",
+        to: "2026-12-06",
+      });
+    });
+
+    it("menghasilkan URL untuk bucket level year (satu tahun penuh)", () => {
+      const url = buildBucketTransactionUrl({
+        from: "2026-01-01",
+        to: "2026-12-31",
+      });
+      expect(url).toBe("/transaksi?from=2026-01-01&to=2026-12-31");
+
+      const parsed = parseFilters(new URLSearchParams(url.replace("/transaksi", "")));
+      expect(parsed).toEqual({
+        from: "2026-01-01",
+        to: "2026-12-31",
+      });
+    });
+  });
+
   describe("formatRupiahRingkas", () => {
     it("memformat 0 dan berbagai rentang angka", () => {
       expect(formatRupiahRingkas(0)).toBe("0");

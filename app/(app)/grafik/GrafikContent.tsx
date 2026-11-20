@@ -1,18 +1,22 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import { todayWIB } from "@/lib/finance/date";
 import { type ChartLevel, type ChartBucket } from "@/lib/finance/chart";
 import {
   shiftAnchor,
   canGoNext,
   formatPeriodTitle,
+  buildBucketTransactionUrl,
 } from "@/lib/finance/chart-nav";
 import { TransactionBarChart } from "@/components/TransactionBarChart";
 
 const emptySubscribe = () => () => {};
 
 export function GrafikContent() {
+  const router = useRouter();
+
   // Ambil tanggal hari ini via useSyncExternalStore untuk kepatuhan SSR prerender Next.js 16
   const clientToday = useSyncExternalStore(
     emptySubscribe,
@@ -142,6 +146,15 @@ export function GrafikContent() {
     setErrorMsg(null);
     setReloadKey((k) => k + 1);
   }, []);
+
+  // Handler klik bucket: membuka /transaksi dengan filter periode bucket tersebut
+  const handleBucketClick = useCallback(
+    (bucket: ChartBucket) => {
+      const url = buildBucketTransactionUrl(bucket);
+      router.push(url);
+    },
+    [router]
+  );
 
   const periodTitle = effectiveAnchor
     ? formatPeriodTitle(effectiveAnchor, level)
@@ -304,7 +317,11 @@ export function GrafikContent() {
               </p>
             </div>
           ) : (
-            <TransactionBarChart level={level} buckets={buckets} />
+            <TransactionBarChart
+              level={level}
+              buckets={buckets}
+              onBucketClick={handleBucketClick}
+            />
           )}
         </div>
       </section>

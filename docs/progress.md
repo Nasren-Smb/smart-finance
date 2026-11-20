@@ -12,9 +12,28 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 5: Langkah 2 (Interaksi klik batang grafik menuju filter /transaksi dan kartu grafik ringkas di Beranda)
+Fase 5: Langkah 3 (Tes menyeluruh dan verifikasi akhir Fase 5)
 
 ## Terakhir Selesai
+Fase 5 (Langkah 2):
+1. Pembuatan fungsi murni `buildBucketTransactionUrl` di `lib/finance/chart-nav.ts`:
+   - Membentuk URL `/transaksi?from=...&to=...` menggunakan `buildSearchString` yang sudah ada tanpa menulis nama parameter secara manual.
+   - 3 unit test Vitest baru di `lib/finance/chart-nav.test.ts` (bucket satu hari, rentang melewati bulan, dan satu tahun penuh) yang terverifikasi terbaca dengan benar oleh `parseFilters`. Total 162 unit test lulus 100%.
+2. Dukungan klik pada `components/TransactionBarChart.tsx`:
+   - Menerima prop opsional `onBucketClick?: (bucket: ChartBucket) => void` dan `height?: number` (default 260px).
+   - Mendeteksi klik pada seluruh kolom bucket (via `onClick` pada `BarChart` membaca `activeTooltipIndex` / `activeIndex`) sehingga bucket kecil atau bernilai 0 tetap mudah diketuk, ditambah fallback `onClick` langsung pada `Bar`.
+   - Menambahkan petunjuk teks kecil "Ketuk batang untuk melihat transaksinya" jika prop `onBucketClick` diberikan.
+   - Keterbatasan keyboard Recharts 3.11.0: `keyboardEventsMiddleware` pada Recharts 3.11 hanya menangani navigasi visual tooltip (panah kiri/kanan dan enter untuk toggle lock tooltip), tetapi tidak mengekspos callback klik aksi domain ke komponen wrapper tanpa hack DOM; oleh karena itu aksi klik navigasi utama dilayani melalui pointer/touch pada seluruh kolom bar.
+3. Integrasi klik pada halaman `/grafik` (`app/(app)/grafik/GrafikContent.tsx`):
+   - Menavigasikan pengguna ke URL `/transaksi` menggunakan `router.push(buildBucketTransactionUrl(bucket))` tanpa reload penuh saat kolom bucket diklik.
+4. Pembuatan komponen kartu grafik ringkas Beranda `app/(app)/HomeChartSection.tsx`:
+   - Judul "Grafik minggu ini" dengan 7 batang harian Senin sampai Minggu ber-anchor `clientToday` (`useSyncExternalStore` tanpa `Date.now()` saat render).
+   - Tautan "Lihat grafik lengkap" menuju `/grafik`.
+   - Penanganan status memuat, error mandiri dengan tombol coba lagi, AbortController, dan pesan data kosong "Belum ada transaksi minggu ini" plus ajakan "Catat pemasukan pertamamu" ke `/transaksi/baru`.
+   - Sinkronisasi penyegaran data via `window.focus` di bawah Cache Components Next.js 16.
+   - Dipasang di `app/(app)/page.tsx` tepat di antara kartu ringkasan periode dan transaksi terbaru.
+5. Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus, 162 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100% tanpa error prerender `Date.now()`.
+
 Fase 5 (Langkah 1):
 1. Instalasi library visualisasi data: `recharts@3.11.0` (kompatibel penuh dengan React 19).
 2. Pembuatan helper dan fungsi murni navigasi/label grafik di `lib/finance/chart-nav.ts`:
