@@ -12,9 +12,46 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 6: Langkah 2 (Antarmuka dan halaman /export)
+Fase 6: Langkah 3 (Audit dokumen dan verifikasi akhir Fase 6)
 
 ## Terakhir Selesai
+Fase 6 (Perbaikan Bundling Font PDFKit Turbopack):
+- Investigasi dan pembuktian error font pdfkit di runtime produksi (`npm run start`):
+  - Pada `pdfkit@0.21.0` (`node_modules/pdfkit/js/pdfkit.js:9251-9279`), font standar dimuat secara dinamis via `createRequire(__filename)('./standard-fonts/<Font>.cjs')`.
+  - Ketika dibundel oleh Turbopack Next.js, `__filename` mengarah ke bundle runtime dan pemanggilan tersebut memicu `MODULE_NOT_FOUND`, lalu melempar: `Cannot load the standard font "Helvetica-Bold" from pdfkit's package directory, which is not available once pdfkit is bundled into another file. Either mark pdfkit as external in the bundler...`.
+- Solusi minimal di `next.config.ts`:
+  - Menambahkan `serverExternalPackages: ["pdfmake", "pdfkit"]` di tingkat root `NextConfig`.
+  - Menambahkan `outputFileTracingIncludes: { "/api/export": ["./node_modules/pdfkit/js/standard-fonts/**/*"] }` untuk memastikan seluruh file font standar `.cjs`, `.mjs`, dan chunks ikut ter-trace ke output standalone Vercel.
+  - Bagian `turbopack.rules` dipertahankan persis tanpa perubahan.
+- Pelajaran penting: Unit test dan build sukses tidak otomatis membuktikan PDF berjalan di runtime produksi; verifikasi penuh membutuhkan `npm run build + npm run start` dan tes di Vercel.
+
+Fase 6 (Perbaikan Bug Export PDF):
+- Investigasi dan pembuktian penyebab error 500 PDF:
+  - Pada `pdfmake` 0.3.15 di Node.js, `provideFont` (`PDFDocument.js:77`) memeriksa nama font string melalui `validateLocalFile(path)` (`PDFDocument.js:203`).
+  - Karena sebelumnya `setLocalAccessPolicy(() => false)` menolak semua string path, nama font bawaan standar ("Helvetica", "Helvetica-Bold", dsb.) ikut terblokir dan melempar `Access to local file denied by resource access policy: Helvetica-Bold`.
+- Solusi minimal di `lib/export/pdf.ts`:
+  - `setLocalAccessPolicy((path) => ALLOWED_STANDARD_FONTS.has(path))` yang hanya mengizinkan 4 nama font standar yang dipakai ("Helvetica", "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique"). Akses berkas lokal sembarang dan URL tetap ditolak (`setUrlAccessPolicy(() => false)`).
+- Penambahan unit test Vitest di `lib/export/pdf.test.ts` (4 tests: expense, income, all selisih positif, all selisih negatif) yang terverifikasi gagal pada kode lama dan lulus pada kode baru. Total 203 tests lulus 100%.
+
+Fase 6 (Langkah 2):
+- Pembuatan modul logika murni form export `lib/finance/export-form.ts` dan 16 unit test Vitest di `lib/finance/export-form.test.ts`:
+  - `getAvailableYears`: menghasilkan 6 tahun (tahun berjalan mundur 5 tahun).
+  - `getAvailableMonths`: membatasi bulan masa depan pada tahun berjalan.
+  - `getMonthDateRange`: tanggal 1 sampai akhir bulan (memperhatikan kabisat Februari).
+  - `parseContentDispositionFileName`: ekstraksi filename dari header attachment dengan fallback cadangan.
+  - `validateCustomDateRange`: validasi kedua tanggal terisi, Dari <= Sampai, dan batas 366 hari inklusif (menggunakan `countDaysInclusive`).
+- Implementasi antarmuka klien halaman `/export` di `app/(app)/export/page.tsx` & `ExportContent.tsx`:
+  - Satu kartu form (mobile-first, tema gelap), judul "Export Laporan".
+  - Pilihan isi: Semua transaksi (default), Pemasukan, Pengeluaran.
+  - Pilihan periode: "Per bulan" (default, dropdown Bulan dan Tahun) atau "Pilih tanggal" (input Dari dan Sampai dengan pola pemilih tanggal proyek).
+  - Pilihan format: Excel (xlsx, default) atau PDF (pdf).
+  - Tombol unduh laporan (min-h 44px, label "Menyiapkan..." saat proses, penanganan state dengan try/finally dan AbortController).
+  - Unduhan file via `URL.createObjectURL` dan auto-revoke.
+  - Notifikasi pesan sukses ("Laporan diunduh.") dan pesan error server (422 NO_TRANSACTIONS, 401 link ke /login, atau pesan umum) dengan role `alert`/`status`.
+  - Integrasi Server Component dengan `await connection()` di dalam `<Suspense>`.
+- Pembaruan `docs/product.md` dan `docs/progress.md`.
+- Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus (`tsc --noEmit`), 199 tests Vitest lulus 100% (+16 tests dari langkah 1), dan build produksi Turbopack (`next build`) berhasil 100% (18 rute) tanpa peringatan.
+
 Fase 6 (Langkah 1):
 - Pembuatan fungsi murni logika export di `lib/finance/export.ts` dan pengujian di `lib/finance/export.test.ts` (21 test case):
   - Validasi parameter `content` (expense|income|all), `format` (xlsx|pdf), `from`, `to` (YYYY-MM-DD valid kalender, from <= to, maksimal 366 hari inklusif, tanggal masa depan diterima).

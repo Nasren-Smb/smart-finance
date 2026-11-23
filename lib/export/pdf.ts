@@ -4,6 +4,13 @@ import type { PreparedExportData } from "@/lib/finance/export";
 import { formatRupiah } from "@/lib/format";
 
 // Konfigurasi font standar PDFMake (menggunakan standard 14 fonts bawaan PDF tanpa membaca file TTF lokal)
+const ALLOWED_STANDARD_FONTS = new Set([
+  "Helvetica",
+  "Helvetica-Bold",
+  "Helvetica-Oblique",
+  "Helvetica-BoldOblique",
+]);
+
 pdfMake.setFonts({
   Roboto: {
     normal: "Helvetica",
@@ -13,7 +20,7 @@ pdfMake.setFonts({
   },
 });
 pdfMake.setUrlAccessPolicy(() => false);
-pdfMake.setLocalAccessPolicy(() => false);
+pdfMake.setLocalAccessPolicy((path) => ALLOWED_STANDARD_FONTS.has(path));
 
 function formatSignedRupiah(amount: number, sign: "+" | "-"): string {
   const base = formatRupiah(amount);
