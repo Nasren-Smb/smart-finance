@@ -19,7 +19,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | Hosting | Vercel (serverless; belum dideploy) | Terpasang |
 | Version Control | Git / GitHub (dikelola developer secara manual) | Terpasang |
 | Visualisasi Data | Recharts | Terpasang |
-| Export Dokumen | Library export Excel dan PDF | Belum diputuskan (fase 6) |
+| Export Dokumen | exceljs, pdfmake, @types/pdfmake | Terpasang |
 
 ## 2. Versi Dependensi (package.json)
 | Paket | Versi di package.json |
@@ -32,7 +32,10 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | `drizzle-orm` | `^0.45.4` |
 | `postgres` | `^4.1.1` |
 | `zod` | `^4.6.7` |
-| `recharts` | `3.11.0` |
+| `recharts` | `^3.11.0` |
+| `exceljs` | `^4.4.0` |
+| `pdfmake` | `^0.3.15` |
+| `@types/pdfmake` | `^0.3` |
 | `tailwindcss` | `4.3.3` |
 | `@tailwindcss/turbopack` | `4.3.3` |
 | `typescript` | `^5` |

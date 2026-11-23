@@ -71,8 +71,10 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
   - Paginasi: 20 item per tampilan dengan tombol "Muat lebih banyak".
 - **Export Laporan**:
   - Pilihan isi: (a) pengeluaran + total, (b) pemasukan + total, (c) semua + selisih.
-  - Pilihan periode: Per bulan atau rentang tanggal.
-  - Format berkas: Excel atau PDF.
+  - Pilihan periode: Per bulan atau rentang tanggal (maksimal 366 hari inklusif).
+  - Format berkas: Excel (`.xlsx`) atau PDF (`.pdf`).
+  - Penamaan berkas: `smart-finance-<isi>-<dari>_<sampai>.<ekstensi>` (contoh: `smart-finance-semua-2026-11-01_2026-11-30.xlsx`).
+  - Ketentuan isi: Tanpa nama atau email pengguna. Baris judul dan metadata periode. Tanda nominal jelas (`+` untuk pemasukan, `-` untuk pengeluaran). Header tebal dan beku pada Excel; format halaman A4 portrait dengan footer nomor halaman pada PDF. Jika periode tidak memiliki transaksi, ekspor ditolak (422 `NO_TRANSACTIONS`).
 
 ## 9. Format Tampilan
 - **Nominal**: "Rp 1.250.000" (titik sebagai pemisah ribuan, awalan "Rp ").

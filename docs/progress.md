@@ -12,9 +12,28 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 6: Langkah 0 (Uji kecil exceljs dan pdfmake lewat route spike)
+Fase 6: Langkah 2 (Antarmuka dan halaman /export)
 
 ## Terakhir Selesai
+Fase 6 (Langkah 1):
+- Pembuatan fungsi murni logika export di `lib/finance/export.ts` dan pengujian di `lib/finance/export.test.ts` (21 test case):
+  - Validasi parameter `content` (expense|income|all), `format` (xlsx|pdf), `from`, `to` (YYYY-MM-DD valid kalender, from <= to, maksimal 366 hari inklusif, tanggal masa depan diterima).
+  - Pembentukan nama berkas: `smart-finance-<isi>-<dari>_<sampai>.<ekstensi>`.
+  - Penyiapan data: label periode, kolom tabel, tanda nominal (+/-), dan baris ringkasan (termasuk penanganan selisih negatif).
+- Pembuatan modul query database `lib/finance/export-db.ts`:
+  - `getExportTransactions`: filter wajib `user_id = user.id`, filter tanggal inklusif `from` s.d. `to`, filter jenis transaksi jika `expense` atau `income`, urutan kronologis stabil (`transaction_date ASC`, `created_at ASC`, `id ASC`).
+- Pembuatan generator dokumen:
+  - `lib/export/xlsx.ts`: Excel tebal dan beku (*freeze pane* di baris 5), kolom tanggal bertipe Date UTC (`yyyy-mm-dd`), kolom nominal angka berformat Rupiah bertanda (`"+"\Rp\ #,##0` / `"-"\Rp\ #,##0`), baris ringkasan tebal.
+  - `lib/export/pdf.ts`: Dokumen A4 portrait, standard 14 fonts (`Helvetica`), layout tabel bersih dengan *word-wrap*, nominal rata kanan, ringkasan total, footer dinamis "Halaman X dari N".
+- Pembuatan endpoint produksi `GET /api/export` di `app/api/export/route.ts`:
+  - Verifikasi pengguna server (401 jika unauthenticated).
+  - Validasi query Zod (400 dengan error fields spesifik jika ada parameter tidak valid).
+  - Penolakan jika tidak ada transaksi (422 `NO_TRANSACTIONS`, "Tidak ada transaksi pada periode ini").
+  - Menghasilkan binary response bertipe `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` atau `application/pdf` dengan header `Content-Disposition: attachment`.
+- Penghapusan folder route sementara `app/api/export-spike/`.
+- Sinkronisasi dokumentasi `docs/api.md`, `docs/product.md`, `docs/tech-stack.md`, dan `docs/progress.md`.
+- Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus (`tsc --noEmit`), 183 tests Vitest lulus 100% (+21 tests dari langkah 0), dan build produksi Turbopack (`next build`) berhasil 100% (18 rute) tanpa peringatan.
+
 Fase 6 (Langkah 0):
 - Pemasangan pustaka export: `exceljs@4.4.0` dan `pdfmake@0.3.15`, beserta devDependency `@types/pdfmake@0.3.3`.
 - Pembuatan endpoint sementara `GET /api/export-spike?format=xlsx|pdf` di `app/api/export-spike/route.ts`:

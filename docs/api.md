@@ -43,6 +43,7 @@ Dokumen ini mendefinisikan kontrak endpoint REST API Smart Finance.
 | `GET` | `/api/balance` | - | `200 OK` (`{ balance }`) | `401` (UNAUTHORIZED), `500` |
 | `GET` | `/api/summary` | Query: `from`, `to` (wajib, YYYY-MM-DD) | `200 OK` (`{ totalIncome, totalExpense, difference }`) | `400` (VALIDATION_ERROR), `401` (UNAUTHORIZED), `500` |
 | `GET` | `/api/chart` | Query: `level` (day/week/month/year), `anchor` (wajib jika level!=year, YYYY-MM-DD) | `200 OK` (`{ level, buckets: [{ from, to, income, expense }] }`) | `400` (VALIDATION_ERROR), `401` (UNAUTHORIZED), `500` |
+| `GET` | `/api/export` | Query: `content` (expense/income/all), `format` (xlsx/pdf), `from` (YYYY-MM-DD), `to` (YYYY-MM-DD) | `200 OK` (Binary file, Content-Disposition: attachment, filename: `smart-finance-<isi>-<dari>_<sampai>.<ekstensi>`) | `400` (VALIDATION_ERROR), `401` (UNAUTHORIZED), `422` (NO_TRANSACTIONS), `500` |
 
 ## 4. Mekanisme Keamanan Saldo
 - Operasi mutasi penambahan, pembaruan nominal/jenis, dan penghapusan transaksi berjalan di dalam blok transaksi database dengan advisory lock `pg_advisory_xact_lock(hashtext(userId))`.
