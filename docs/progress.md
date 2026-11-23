@@ -12,9 +12,18 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 6: Langkah 0 (Persiapan dan pemilihan library export Excel & PDF)
+Fase 6: Langkah 0 (Uji kecil exceljs dan pdfmake lewat route spike)
 
 ## Terakhir Selesai
+Fase 6 (Langkah 0):
+- Pemasangan pustaka export: `exceljs@4.4.0` dan `pdfmake@0.3.15`, beserta devDependency `@types/pdfmake@0.3.3`.
+- Pembuatan endpoint sementara `GET /api/export-spike?format=xlsx|pdf` di `app/api/export-spike/route.ts`:
+  - Proteksi otentikasi server (401 jika belum login) dan validasi parameter query `format` (400 jika selain xlsx atau pdf).
+  - Excel: workbook tebal & freeze baris header, format tanggal sungguhan (UTC Date), format angka Rupiah (`"Rp "#,##0`), ringkasan total pemasukan/pengeluaran/selisih, unduhan attachment `.xlsx`.
+  - PDF: dokumen A4 portrait, standard 14 fonts (Helvetica) tanpa file TTF eksternal, tabel bergaris horizontal ringan, nominal rata kanan, ringkasan total, footer dinamis "Halaman X dari N", unduhan attachment `.pdf`.
+  - Catatan Next.js 16 (Turbopack): Route segment config `export const dynamic = "force-dynamic"` ditolak karena tidak kompatibel dengan `nextConfig.cacheComponents` aktif; Next.js secara otomatis menetapkan route sebagai Dynamic (`ƒ`) melalui pembacaan `request.nextUrl` dan cookie otentikasi.
+- Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus (`tsc --noEmit`), 162 unit tests Vitest lulus 100%, dan build produksi Turbopack (`next build`) berhasil 100% (18 route, tanpa peringatan).
+
 Fase 5 (Langkah 3):
 - Audit dan sinkronisasi dokumentasi proyek setelah Fase 5:
   - `docs/api.md`: Verifikasi kontrak `GET /api/chart` (query `level` & `anchor`, respons sukses `{ level, buckets }`, error 400 VALIDATION_ERROR, 401 UNAUTHORIZED, 500).
