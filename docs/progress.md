@@ -21,7 +21,7 @@ Fase 5 (Langkah 3):
   - `docs/product.md`: Penyelarasan definisi grafik (empat tingkat tampilan, pemotongan minggu di batas bulan, interaksi klik batang ke `/transaksi`, dan grafik ringkas Beranda).
   - `docs/tech-stack.md`: Verifikasi Recharts 3.11.0 tercatat final sebagai library visualisasi data.
   - `docs/progress.md`: Penyelesaian Fase 5 (Langkah 0 s.d. 3), pencatatan keterbatasan keyboard Recharts 3.11.0, peringkasan riwayat langkah lama, dan penetapan Fase 6 sebagai fokus berikutnya.
-- Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus, 162 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100%.
+- Verifikasi menyeluruh: lint bersih (0 error/warning), typecheck lulus, 162 tests Vitest lulus 100%, dan build produksi Next.js 16 (webpack) berhasil 100% (saat itu memakai webpack; sejak perbaikan deploy build memakai Turbopack, lihat Catatan Penting: Build dan Tailwind).
 
 Fase 5 (Selesai Penuh - Langkah 0 s.d. 3):
 - Langkah 0: Fungsi periode murni grafik (`generateDayBuckets`, `generateWeekBuckets` dengan pemotongan batas bulan, `generateMonthBuckets`), skema validasi Zod `chartQuerySchema`, fungsi agregasi database `getChartData` (filter wajib `user_id`, satu query agregasi efisien `SUM`/`GROUP BY`), dan route handler `GET /api/chart` (401 jika unauthenticated, 400 jika query tidak valid).
@@ -45,6 +45,16 @@ Fase 3 (Selesai Penuh - Transaksi & Filter):
 Fase 6: Export Excel dan PDF (persiapan library, kontrak data, dan antarmuka halaman /export).
 
 ## Catatan Penting
+- Build dan Tailwind:
+  - Script build adalah "next build" (Turbopack), tanpa --webpack.
+  - Tailwind aktif hanya lewat turbopack.rules di next.config.ts (loader @tailwindcss/turbopack), tanpa postcss.config.
+  - Build webpack tidak memproses Tailwind sehingga halaman produksi tampil tanpa gaya, jadi --webpack jangan ditambahkan kembali.
+  - npm run dev dan npm run build sama-sama Turbopack; selalu uji juga lewat npm run build + npm run start.
+- Deploy:
+  - Aplikasi di-deploy ke Vercel dari branch main (Production Branch harus main); tes produksi lengkap sudah dilakukan developer.
+  - Supabase Redirect URLs memuat alamat Vercel dan http://localhost:3000/**.
+  - DATABASE_URL memakai Transaction pooler (port 6543) dengan prepare: false.
+  - DATABASE_MIGRATION_URL (Session pooler, port 5432) hanya di laptop.
 - Penanganan Header Content-Type pada Mutasi:
   - Seluruh mutasi API (`POST`, `PATCH`, `DELETE`) pada server Smart Finance memvalidasi header `Content-Type: application/json` (mengembalikan `415 Unsupported Media Type` jika absen).
   - Panggilan `fetch` klien untuk `DELETE` wajib secara eksplisit menyertakan `headers: { "Content-Type": "application/json" }` meskipun tidak membawa payload body.
