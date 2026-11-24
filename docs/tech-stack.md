@@ -16,10 +16,10 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | Validasi Input | Zod | Terpasang |
 | Testing Framework | Vitest | Terpasang |
 | Layanan Database & Auth | Supabase (PostgreSQL dan Auth login Google saja) | Terpasang |
-| Hosting | Vercel (serverless; belum dideploy) | Terpasang |
+| Hosting | Vercel (serverless), sudah di-deploy dari branch main | Terpasang |
 | Version Control | Git / GitHub (dikelola developer secara manual) | Terpasang |
 | Visualisasi Data | Recharts | Terpasang |
-| Export Dokumen | Library export Excel dan PDF | Belum diputuskan (fase 6) |
+| Export Dokumen | exceljs, pdfmake, @types/pdfmake | Terpasang |
 
 ## 2. Versi Dependensi (package.json)
 | Paket | Versi di package.json |
@@ -32,7 +32,10 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | `drizzle-orm` | `^0.45.4` |
 | `postgres` | `^4.1.1` |
 | `zod` | `^4.6.7` |
-| `recharts` | `3.11.0` |
+| `recharts` | `^3.11.0` |
+| `exceljs` | `^4.4.0` |
+| `pdfmake` | `^0.3.15` |
+| `@types/pdfmake` | `^0.3` |
 | `tailwindcss` | `4.3.3` |
 | `@tailwindcss/turbopack` | `4.3.3` |
 | `typescript` | `^5` |
@@ -48,7 +51,8 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 - **Catatan Versi**: Versi persis yang terpasang ada di `package-lock.json`.
 - **Package Manager**: `npm`.
 - **Struktur Direktori**: Tanpa folder `src/`.
-- **Script Build**: Script `"build"` memakai flag `next build --webpack`.
+- **Script Build**: Script `"build"` adalah `"next build"` (Turbopack, tanpa `--webpack`), sesuai `package.json`.
+- **Konfigurasi Bundling & Tracing Export (next.config.ts)**: Mengonfigurasi `serverExternalPackages: ["pdfmake", "pdfkit"]` dan `outputFileTracingIncludes` untuk `"/api/export"` (folder `standard-fonts` milik `pdfkit`). Tujuannya agar `pdfkit` tidak ikut dibundel Turbopack dan font standar dapat dimuat. Perilakunya di Vercel belum terbukti dan akan dicatat setelah tes produksi.
 
 ## 3. Struktur Proyek Saat Ini
 - `app/`: Rute utama aplikasi berbasis Next.js App Router (layout root, styling global).

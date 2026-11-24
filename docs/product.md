@@ -70,9 +70,14 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
   - Urutan tampilan: Terbaru dulu (`transaction_date` menurun / DESC, lalu `created_at` menurun / DESC, lalu `id` menurun / DESC agar stabil).
   - Paginasi: 20 item per tampilan dengan tombol "Muat lebih banyak".
 - **Export Laporan**:
-  - Pilihan isi: (a) pengeluaran + total, (b) pemasukan + total, (c) semua + selisih.
-  - Pilihan periode: Per bulan atau rentang tanggal.
-  - Format berkas: Excel atau PDF.
+  - Halaman: `/export` berupa satu kartu formulir (mobile-first, tema gelap) dengan judul "Export Laporan".
+  - Pilihan isi: Pengeluaran, Pemasukan, Semua transaksi (default: Semua transaksi).
+  - Pilihan periode:
+    - Per bulan (default): Pilihan bulan (Januari s.d. Desember, bulan setelah bulan berjalan tidak tersedia pada tahun ini) dan tahun (tahun berjalan mundur 5 tahun). Otomatis diubah menjadi rentang tanggal 1 s.d. akhir bulan.
+    - Pilih tanggal: Input Dari dan Sampai dengan rentang tanggal bebas (maksimal 366 hari inklusif, tanggal masa depan diterima).
+  - Pilihan format berkas: Excel (`.xlsx`, default) atau PDF (`.pdf`).
+  - Penamaan berkas: `smart-finance-<isi>-<dari>_<sampai>.<ekstensi>` (contoh: `smart-finance-semua-2026-11-01_2026-11-30.xlsx`).
+  - Ketentuan isi: Tanpa nama atau email pengguna. Baris judul dan metadata periode. Tanda nominal jelas (`+` untuk pemasukan, `-` untuk pengeluaran). Header tebal dan beku pada Excel; format halaman A4 portrait dengan footer nomor halaman pada PDF. Jika periode tidak memiliki transaksi, ekspor ditolak (422 `NO_TRANSACTIONS`).
 
 ## 9. Format Tampilan
 - **Nominal**: "Rp 1.250.000" (titik sebagai pemisah ribuan, awalan "Rp ").
@@ -99,4 +104,4 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
 - Progressive Web App (PWA).
 
 ## 13. Belum Diputuskan (Tanya Developer, Jangan Menebak)
-- Struktur kolom dan tata letak dokumen Excel serta PDF.
+- Tidak ada yang belum diputuskan untuk Fase 6.
