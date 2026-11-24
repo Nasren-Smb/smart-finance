@@ -107,9 +107,11 @@ Fase 3 (Selesai Penuh - Transaksi & Filter):
 - Perbaikan Khusus: Header `Content-Type: application/json` pada mutasi DELETE klien, mode kustom filter tanggal mandiri, dan logging aman 500 server.
 
 ## Tugas Berikutnya
-Fase 6: Export Excel dan PDF (persiapan library, kontrak data, dan antarmuka halaman /export).
+Fase 6: Langkah 3 (tersisa: tes menyeluruh di laptop, PR ke main, tes Excel dan PDF di alamat Vercel). Fase 7 (Edukasi & Motivasi, footer, perapian) adalah langkah sesudah itu.
 
 ## Catatan Penting
+- Sinkronisasi Branch dan Riwayat Merge:
+  - PR #9 dan #10 dari branch fase-6-export sempat ter-merge ke main sebelum fase selesai, sehingga main memuat route sementara export-spike sampai PR Fase 6 yang sebenarnya digabung; sebelum menggabung PR selalu periksa dengan git log --oneline origin/main..<branch>.
 - Build dan Tailwind:
   - Script build adalah "next build" (Turbopack), tanpa --webpack.
   - Tailwind aktif hanya lewat turbopack.rules di next.config.ts (loader @tailwindcss/turbopack), tanpa postcss.config.

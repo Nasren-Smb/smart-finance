@@ -104,4 +104,4 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
 - Progressive Web App (PWA).
 
 ## 13. Belum Diputuskan (Tanya Developer, Jangan Menebak)
-- Struktur kolom dan tata letak dokumen Excel serta PDF.
+- Tidak ada yang belum diputuskan untuk Fase 6.
