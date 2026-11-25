@@ -43,7 +43,21 @@ Dokumen ini adalah sumber kebenaran tampilan; hal yang tidak tercakup harus dita
 - **Susunan Beranda**: (1) kartu Saldo besar, (2) ringkasan periode (pemasukan, pengeluaran, selisih) dengan pemilih periode, (3) grafik ringkas, (4) transaksi terbaru.
 - **Footer**: "© 2026 Smart Finance · Dibuat oleh Nasren Sembiring" (Laptop: bawah area konten; HP: hanya di akhir Beranda dan halaman Login).
 
-## 5. Belum Diputuskan (Tanya Developer, Jangan Menebak)
-- Pilihan font (Inter atau Geist).
-- Gaya ikon.
+## 5. Tipografi dan Ikon
+- **Font Utama**: Inter via `next/font/google` (subset latin, variabel CSS `--font-inter`), diterapkan ke seluruh aplikasi menggantikan Geist Sans.
+- **Font Monospace**: Geist Mono via `next/font/google` (variabel CSS `--font-geist-mono`) digunakan untuk angka tabular/nominal transaksi.
+- **Ikon**: Menggunakan paket `lucide-react` (impor bernama per komponen). Ikon yang benar-benar dipakai:
+  - Menu Beranda: `House`
+  - Menu Transaksi: `ArrowLeftRight`
+  - Menu Grafik: `ChartColumn`
+  - Menu Export: `FileDown`
+  - Menu Edukasi: `Lightbulb`
+  - Profil Akun: `User`
+  - Tombol Tambah Transaksi: `Plus`
+  - Tombol Keluar: `LogOut`
+  - Aksi transaksi: tombol "Edit" dan "Hapus" pada daftar transaksi tetap berupa teks saja, tanpa ikon (`Pencil` dan `Trash2` tidak dipakai).
+  - Ikon dekoratif diberi `aria-hidden="true"`, sedangkan tombol berbasis ikon wajib memiliki label aksesibel yang jelas dalam Bahasa Indonesia.
+  - Warna ikon mengikuti token warna Tailwind yang sudah ada (status aktif memakai token `accent`). Ukuran berkisar antara 20 sampai 24 px (w-5 h-5 atau w-7 h-7 pada tombol FAB).
+
+## 6. Belum Diputuskan (Tanya Developer, Jangan Menebak)
 - Animasi dan transisi.

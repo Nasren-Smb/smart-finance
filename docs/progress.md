@@ -12,9 +12,21 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.2 berikutnya: font, ikon, footer, perapian)
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.2 selesai: font Inter dan ikon Lucide terpasang; langkah selanjutnya: footer dan perapian)
 
 ## Terakhir Selesai
+Fase 7 (Langkah 7.2 - Font Inter & Ikon Lucide):
+- Penerapan font Inter melalui `next/font/google` (subset latin, variabel `--font-inter`) di `app/layout.tsx` dan `app/globals.css`, menggantikan Geist Sans. Geist Mono tetap dipertahankan untuk kebutuhan angka nominal transaksi (`font-mono`).
+- Pemasangan `lucide-react` versi 1.79.0 (`^1.79.0`).
+- Penggantian simbol lama (SVG buatan sendiri) dengan ikon resmi Lucide:
+  - Menu navigasi Sidebar: `House` (Beranda), `ArrowLeftRight` (Transaksi), `ChartColumn` (Grafik), `FileDown` (Export), `Lightbulb` (Edukasi), `Plus` (Tambah transaksi), `User` (Akun).
+  - Menu navigasi BottomNav: `House` (Beranda), `ArrowLeftRight` (Transaksi), `ChartColumn` (Grafik), `FileDown` (Export), `Lightbulb` (Edukasi), `Plus` (FAB Tambah transaksi dengan `aria-label="Tambah transaksi"`).
+  - Profil Akun di Beranda HP: `User` (dengan `aria-label="Akun Saya"`).
+  - Tombol Keluar di `/akun`: `LogOut`.
+- Seluruh ikon dekoratif dilengkapi `aria-hidden="true"`, dan tombol aksi tetap memiliki label aksesibel Bahasa Indonesia.
+- Tombol Edit dan Hapus pada daftar transaksi sengaja tetap berupa teks saja (tanpa ikon), serta Geist Mono tetap dipertahankan untuk angka nominal (`font-mono`).
+- Pembaruan dokumen `docs/design.md`, `docs/tech-stack.md`, dan `docs/progress.md`.
+
 Fase 7 (Langkah 7.1 - Halaman Edukasi & Motivasi):
 - Pembuatan modul statis `lib/motivation.ts` dan pengujian `lib/motivation.test.ts`:
   - `MOTIVATION_QUOTES`: array statis `readonly string[]` berisi tepat 30 kalimat motivasi keuangan asli yang tidak boleh diubah oleh agent.

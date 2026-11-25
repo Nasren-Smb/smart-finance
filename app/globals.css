@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: var(--font-inter);
   --color-bg-main: #141416;
   --color-surface: #1C1C20;
   --color-surface-elevated: #26262B;
@@ -15,6 +16,7 @@
 }
 
 body {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   background-color: var(--color-bg-main);
   color: var(--color-text-main);
   min-height: 100vh;
