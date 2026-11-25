@@ -8,13 +8,19 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [x] Fase 3: Transaksi (tambah, edit, hapus, daftar, filter, cari)
 - [x] Fase 4: Beranda (saldo dan ringkasan periode)
 - [x] Fase 5: Grafik
-- [ ] Fase 6: Export Excel/PDF
+- [x] Fase 6: Export Excel/PDF
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 6: Langkah 3 (Audit dokumen dan verifikasi akhir Fase 6)
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi
 
 ## Terakhir Selesai
+Fase 6 (Selesai Penuh & Lulus Tes Produksi Vercel):
+- Penggabungan PR #11 ke `main` dan deploy ke Vercel:
+  - Tes produksi di Vercel lulus 100%: route sementara `export-spike` sudah hilang (404), halaman `/export` tampil benar, ekspor Excel dan PDF untuk ketiga isi (Pengeluaran, Pemasukan, Semua transaksi) terunduh dan terverifikasi benar.
+  - Halaman Beranda, Transaksi, dan Grafik tetap normal.
+  - Konfigurasi `serverExternalPackages: ["pdfmake", "pdfkit"]` dan `outputFileTracingIncludes` untuk `"/api/export"` di `next.config.ts` terbukti bekerja dengan baik di lingkungan Vercel.
+
 Fase 6 (Perbaikan Bundling Font PDFKit Turbopack):
 - Investigasi dan pembuktian error font pdfkit di runtime produksi (`npm run start`):
   - Pada `pdfkit@0.21.0` (`node_modules/pdfkit/js/pdfkit.js:9251-9279`), font standar dimuat secara dinamis via `createRequire(__filename)('./standard-fonts/<Font>.cjs')`.
@@ -107,7 +113,7 @@ Fase 3 (Selesai Penuh - Transaksi & Filter):
 - Perbaikan Khusus: Header `Content-Type: application/json` pada mutasi DELETE klien, mode kustom filter tanggal mandiri, dan logging aman 500 server.
 
 ## Tugas Berikutnya
-Fase 6: Langkah 3 (tersisa: tes menyeluruh di laptop, PR ke main, tes Excel dan PDF di alamat Vercel). Fase 7 (Edukasi & Motivasi, footer, perapian) adalah langkah sesudah itu.
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi.
 
 ## Catatan Penting
 - Sinkronisasi Branch dan Riwayat Merge:
