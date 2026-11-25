@@ -52,7 +52,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 - **Package Manager**: `npm`.
 - **Struktur Direktori**: Tanpa folder `src/`.
 - **Script Build**: Script `"build"` adalah `"next build"` (Turbopack, tanpa `--webpack`), sesuai `package.json`.
-- **Konfigurasi Bundling & Tracing Export (next.config.ts)**: Mengonfigurasi `serverExternalPackages: ["pdfmake", "pdfkit"]` dan `outputFileTracingIncludes` untuk `"/api/export"` (folder `standard-fonts` milik `pdfkit`). Tujuannya agar `pdfkit` tidak ikut dibundel Turbopack dan font standar dapat dimuat. Perilakunya di Vercel belum terbukti dan akan dicatat setelah tes produksi.
+- **Konfigurasi Bundling & Tracing Export (next.config.ts)**: Mengonfigurasi `serverExternalPackages: ["pdfmake", "pdfkit"]` dan `outputFileTracingIncludes` untuk `"/api/export"` (folder `standard-fonts` milik `pdfkit`). Tujuannya agar `pdfkit` tidak ikut dibundel Turbopack dan font standar dapat dimuat. Konfigurasi ini sudah terbukti bekerja di Vercel lewat tes produksi.
 
 ## 3. Struktur Proyek Saat Ini
 - `app/`: Rute utama aplikasi berbasis Next.js App Router (layout root, styling global).
