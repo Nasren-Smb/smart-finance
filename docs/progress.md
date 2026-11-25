@@ -12,9 +12,23 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.2 berikutnya: font, ikon, footer, perapian)
 
 ## Terakhir Selesai
+Fase 7 (Langkah 7.1 - Halaman Edukasi & Motivasi):
+- Pembuatan modul statis `lib/motivation.ts` dan pengujian `lib/motivation.test.ts`:
+  - `MOTIVATION_QUOTES`: array statis `readonly string[]` berisi tepat 30 kalimat motivasi keuangan asli yang tidak boleh diubah oleh agent.
+  - `getMotivationIndex`: fungsi murni menghitung indeks kalimat (0-29) berdasarkan string tanggal kalender "YYYY-MM-DD" dengan formula hari kalender UTC aman non-negatif (`((dayNumber % totalQuotes) + totalQuotes) % totalQuotes`). Melempar error untuk tanggal kalender tidak valid atau `totalQuotes <= 0`.
+  - 11 unit tests Vitest menguji kelengkapan 30 kalimat, keunikan, deterministik, penambahan indeks per hari berurutan, pergantian bulan dan tahun, tahun kabisat (2028), wrap around dari 29 ke 0, serta penanganan error input invalid.
+- Implementasi antarmuka `/edukasi`:
+  - Server Component `app/(app)/edukasi/page.tsx` dengan `await connection()` di dalam `<Suspense>`.
+  - Client Component `app/(app)/edukasi/EdukasiContent.tsx`:
+    - Menggunakan `todayWIB()` via `useSyncExternalStore` untuk mencegah mismatch dan pembacaan unstable `Date.now()` saat prerendering/SSR Next.js.
+    - Menampilkan kartu besar "Kalimat hari ini" di posisi atas hanya berisi label "Kalimat hari ini" dan kalimatnya (tanpa penanda urutan).
+    - Menampilkan daftar bernomor (`<ol>`) berisi ke-30 kalimat lengkap di bawah yang tampil seragam (tanpa penanda visual khusus).
+    - Tanpa kontrol interaktif apa pun (sesuai spesifikasi).
+- Pembaruan dokumentasi `docs/product.md` dan `docs/progress.md`.
+
 Fase 6 (Selesai Penuh & Lulus Tes Produksi Vercel):
 - Penggabungan PR #11 ke `main` dan deploy ke Vercel:
   - Tes produksi di Vercel lulus 100%: route sementara `export-spike` sudah hilang (404), halaman `/export` tampil benar, ekspor Excel dan PDF untuk ketiga isi (Pengeluaran, Pemasukan, Semua transaksi) terunduh dan terverifikasi benar.
