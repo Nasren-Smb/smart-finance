@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 async function AkunContent() {
@@ -39,6 +40,7 @@ async function AkunContent() {
               type="submit"
               className="w-full min-h-[44px] rounded-xl bg-surface-elevated border border-line px-4 py-3 text-sm font-medium text-expense hover:bg-line transition-colors flex items-center justify-center gap-2"
             >
+              <LogOut className="w-4 h-4 shrink-0" aria-hidden="true" />
               Keluar
             </button>
           </form>

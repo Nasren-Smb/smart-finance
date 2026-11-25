@@ -20,6 +20,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | Version Control | Git / GitHub (dikelola developer secara manual) | Terpasang |
 | Visualisasi Data | Recharts | Terpasang |
 | Export Dokumen | exceljs, pdfmake, @types/pdfmake | Terpasang |
+| Tipografi & Ikon | Inter (`next/font/google`), `lucide-react` | Terpasang |
 
 ## 2. Versi Dependensi (package.json)
 | Paket | Versi di package.json |
@@ -36,6 +37,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | `exceljs` | `^4.4.0` |
 | `pdfmake` | `^0.3.15` |
 | `@types/pdfmake` | `^0.3` |
+| `lucide-react` | `^1.79.0` (versi terpasang `1.79.0`) |
 | `tailwindcss` | `4.3.3` |
 | `@tailwindcss/turbopack` | `4.3.3` |
 | `typescript` | `^5` |
@@ -82,7 +84,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 - Pengembangan dilakukan di Windows (PowerShell) dan dites lokal di `localhost` sebelum deploy.
 - Gejala "login Google berhasil di Supabase tapi pengguna kembali ke /login": periksa dulu validitas kunci di `.env.local` sebelum mengubah kode. Penyebab pada Fase 1 adalah nilai kunci yang tidak valid.
 - Next.js 16 menandai konvensi file "middleware" sebagai deprecated demi "proxy"; proyek masih memakai `middleware.ts` dan migrasi belum dilakukan.
-- Font saat ini memakai font bawaan template dan belum diputuskan sebagai font final.
+- Font aplikasi telah diputuskan dan menerapkan Inter untuk teks (sans) serta Geist Mono untuk angka nominal transaksi (monospace).
 - Perubahan file `.env` tidak terbaca tanpa restart server dev.
 
 ## 7. Batasan dan Larangan Tanpa Izin
