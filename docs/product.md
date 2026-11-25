@@ -84,10 +84,14 @@ Dokumen ini mendefinisikan persyaratan fungsional dan perilaku aplikasi Smart Fi
 - **Tanggal**: "18 Nov 2026" (format Indonesia: tanggal, nama bulan singkat 3 huruf, tahun).
 
 ## 10. Edukasi & Motivasi
-- Berisi hanya kalimat motivasi keuangan ASLI tanpa nama tokoh; tanpa artikel atau tips.
-- Disimpan dalam satu file statis; hanya boleh diubah langsung oleh developer.
-- Tanpa fitur admin dan tanpa tabel database.
-- Tampilan: "Kalimat hari ini" di posisi atas, daftar lengkap di bawah.
+- Halaman: `/edukasi`.
+- Berisi tepat 30 kalimat motivasi keuangan ASLI tanpa nama tokoh; tanpa artikel atau tips.
+- Disimpan dalam satu file statis (`lib/motivation.ts`); hanya boleh diubah langsung oleh developer.
+- Tanpa fitur admin, tanpa API endpoint, dan tanpa tabel database.
+- Tampilan:
+  - Kartu besar "Kalimat hari ini" di posisi atas, dipilih secara deterministik berdasarkan tanggal hari ini menurut zona waktu WIB (`todayWIB()`) menggunakan formula hari kalender UTC modulo 30. Kartu hanya berisi label "Kalimat hari ini" dan teks kalimatnya.
+  - Bagian "Semua kalimat" di bawah berupa daftar bernomor (`<ol>`) berisi ke-30 kalimat lengkap yang tampil seragam tanpa penanda visual khusus.
+- Tanpa kontrol interaktif (tanpa tombol acak, bagikan, atau favorit).
 
 ## 11. Kondisi Khusus Antarmuka
 - **Pengguna Baru**: Menampilkan saldo 0 disertai ajakan "Catat pemasukan pertamamu".
