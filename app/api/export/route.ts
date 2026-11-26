@@ -8,7 +8,6 @@ import {
 } from "@/lib/finance/export";
 import { getExportTransactions } from "@/lib/finance/export-db";
 import { generateXlsx } from "@/lib/export/xlsx";
-import { generatePdf } from "@/lib/export/pdf";
 
 export async function GET(request: NextRequest) {
   try {
@@ -59,6 +58,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    const { generatePdf } = await import("@/lib/export/pdf");
     const fileBuffer = await generatePdf(preparedData);
     return new Response(new Uint8Array(fileBuffer), {
       status: 200,
