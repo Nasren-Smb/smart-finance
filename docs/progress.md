@@ -12,7 +12,7 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.2 selesai: font Inter dan ikon Lucide terpasang; langkah selanjutnya: footer dan perapian)
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.2 selesai: font Inter dan ikon Lucide terpasang; langkah selanjutnya: footer dan perapian). Catatan: perbaikan cepat pada `app/api/export/route.ts` memisahkan impor `generatePdf` menjadi dinamis agar jalur Excel tidak lagi bergantung pada pemuatan modul PDF di Vercel; masalah PDF di runtime Vercel masih terbuka.
 
 ## Terakhir Selesai
 Fase 7 (Langkah 7.2 - Font Inter & Ikon Lucide):
