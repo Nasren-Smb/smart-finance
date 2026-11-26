@@ -12,7 +12,7 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.2 selesai: font Inter dan ikon Lucide terpasang; langkah selanjutnya: footer dan perapian). Catatan: perbaikan cepat pada `app/api/export/route.ts` memisahkan impor `generatePdf` menjadi dinamis agar jalur Excel tidak lagi bergantung pada pemuatan modul PDF di Vercel; masalah PDF di runtime Vercel masih terbuka.
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.2 selesai: font Inter dan ikon Lucide terpasang; langkah selanjutnya: footer dan perapian). Catatan: `pdfmake` dipin ke versi `0.3.14` (exact) agar membawa `pdfkit@0.20.2` dengan `fontkit@2.0.4` yang memiliki build CommonJS, menyelesaikan error `ERR_REQUIRE_ESM` di runtime Vercel; versi ini jangan dinaikkan sebelum diuji di Vercel.
 
 ## Terakhir Selesai
 Fase 7 (Langkah 7.2 - Font Inter & Ikon Lucide):

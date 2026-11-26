@@ -35,7 +35,7 @@ Dokumen ini mendefinisikan daftar teknologi yang boleh dipakai; yang tidak terca
 | `zod` | `^4.6.7` |
 | `recharts` | `^3.11.0` |
 | `exceljs` | `^4.4.0` |
-| `pdfmake` | `^0.3.15` |
+| `pdfmake` | `0.3.14` (dipin exact; membawa `pdfkit@0.20.2` & `fontkit@2.0.4` CJS agar kompatibel di Vercel, jangan dinaikkan sebelum diuji di Vercel) |
 | `@types/pdfmake` | `^0.3` |
 | `lucide-react` | `^1.79.0` (versi terpasang `1.79.0`) |
 | `tailwindcss` | `4.3.3` |
