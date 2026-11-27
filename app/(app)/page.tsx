@@ -60,7 +60,16 @@ async function HomeContent() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<div className="text-text-secondary text-sm">Memuat...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex flex-col gap-6 w-full max-w-4xl animate-pulse">
+          <div className="h-8 w-40 bg-surface rounded-xl border border-line" />
+          <div className="h-32 bg-surface rounded-2xl border border-line" />
+          <div className="h-44 bg-surface rounded-2xl border border-line" />
+          <div className="h-64 bg-surface rounded-2xl border border-line" />
+        </div>
+      }
+    >
       <HomeContent />
     </Suspense>
   );

@@ -57,7 +57,14 @@ async function AkunContent() {
 
 export default function AkunPage() {
   return (
-    <Suspense fallback={<div className="text-text-secondary text-sm">Memuat info akun...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex flex-col gap-6 w-full max-w-xl animate-pulse">
+          <div className="h-8 w-32 bg-surface rounded-xl border border-line" />
+          <div className="h-48 bg-surface rounded-2xl border border-line" />
+        </div>
+      }
+    >
       <AkunContent />
     </Suspense>
   );

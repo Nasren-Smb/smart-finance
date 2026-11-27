@@ -59,6 +59,7 @@ Dokumen ini adalah sumber kebenaran tampilan; hal yang tidak tercakup harus dita
   - Ikon dekoratif diberi `aria-hidden="true"`, sedangkan tombol berbasis ikon wajib memiliki label aksesibel yang jelas dalam Bahasa Indonesia.
   - Warna ikon mengikuti token warna Tailwind yang sudah ada (status aktif memakai token `accent`). Ukuran berkisar antara 20 sampai 24 px (w-5 h-5 atau w-7 h-7 pada tombol FAB).
 - **Favicon & Error Handling**: Favicon aplikasi menggunakan `app/icon.svg` bertema warna aksen dengan inisial "S", serta halaman 404 (`not-found.tsx`) dan penanganan error (`error.tsx`, `global-error.tsx`) menerapkan konsistensi tema gelap dan Bahasa Indonesia.
+- **Fokus Global & Skeleton**: Diterapkan aturan fokus global `focus-visible` (outline 2px solid warna aksen, offset 2px) untuk elemen interaktif (tautan, tombol, select, tabindex), dan fallback loading pada Beranda, Akun, serta Tambah Transaksi diselaraskan menggunakan skeleton bertema gelap (`animate-pulse`).
 
 ## 6. Belum Diputuskan (Tanya Developer, Jangan Menebak)
 - Animasi dan transisi.
