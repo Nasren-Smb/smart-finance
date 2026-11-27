@@ -1,5 +1,10 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { EditTransaksiClient } from "./EditTransaksiClient";
+
+export const metadata: Metadata = {
+  title: "Edit Transaksi",
+};
 
 export const instant = false;
 

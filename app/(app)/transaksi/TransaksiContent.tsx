@@ -228,9 +228,6 @@ export function TransaksiContent() {
       }
 
       if (!response.ok) {
-        if (response.status !== 401 && response.status !== 404 && response.status !== 422) {
-          console.error("[hapus] status", response.status);
-        }
         const mapped = mapDeleteTransactionError(response.status, resJson?.error);
         setDeleteError(mapped.message);
         setIsDeleting(false);

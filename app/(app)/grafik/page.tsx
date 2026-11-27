@@ -1,6 +1,11 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import type { Metadata } from "next";
 import { GrafikContent } from "./GrafikContent";
+
+export const metadata: Metadata = {
+  title: "Grafik",
+};
 
 async function GrafikPageLoader() {
   await connection();

@@ -1,6 +1,11 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import type { Metadata } from "next";
 import { ExportContentSection } from "./ExportContent";
+
+export const metadata: Metadata = {
+  title: "Export",
+};
 
 async function ExportPageLoader() {
   await connection();
