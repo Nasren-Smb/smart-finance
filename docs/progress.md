@@ -12,9 +12,15 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.3b prompt B1 selesai: skeleton tiga halaman dan aturan fokus terlihat global selesai; langkah 7.3b prompt B2: kontras text-muted belum dimulai).
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.3b prompt B2 selesai: kontras text-muted diperbarui; menunggu pengujian regresi menyeluruh).
 
 ## Terakhir Selesai
+Fase 7 (Langkah 7.3b Prompt B2 - Kontras Warna Text-Muted):
+- Pembaruan nilai token `--color-text-muted` di `app/globals.css` dari `#71717A` menjadi `#8A8A93` agar memenuhi rasio kontras keterbacaan (sekitar 5,38:1 terhadap `bg-main` dan 4,96:1 terhadap `surface`, melampaui batas minimal 4,5:1 untuk teks kecil).
+- Sinkronisasi nilai dan keterangan token `text-muted` di `docs/design.md`.
+- Verifikasi bahwa `text-secondary` (`#A1A1AA`) tetap lebih terang daripada `text-muted` (`#8A8A93`).
+- Pemindaian menyeluruh memastikan tidak ada kode heksa `#71717A` lain di `app/`, `components/`, `lib/`, `docs/`, serta tidak ada penggunaan pengubah opasitas pada kelas `text-muted` di antarmuka.
+
 Fase 7 (Langkah 7.3b Prompt B1 - Skeleton & Fokus Terlihat Global):
 - Penggantian fallback teks polos Suspense menjadi skeleton bertema gelap (`animate-pulse` dengan kartu ber-border line): `app/(app)/page.tsx`, `app/(app)/akun/page.tsx`, dan `app/(app)/transaksi/baru/page.tsx`.
 - Penambahan aturan fokus terlihat global pada elemen interaktif `a:focus-visible`, `button:focus-visible`, `select:focus-visible`, `[tabindex]:focus-visible` di `app/globals.css` menggunakan token `--color-accent` dengan outline 2px solid dan outline-offset 2px.

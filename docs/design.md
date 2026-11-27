@@ -16,7 +16,7 @@ Dokumen ini adalah sumber kebenaran tampilan; hal yang tidak tercakup harus dita
 | Garis | `#2E2E34` | Border tipis |
 | Teks utama | `#F4F4F5` | Judul, nominal |
 | Teks sekunder | `#A1A1AA` | Keterangan, label |
-| Teks redup | `#71717A` | Placeholder, hint |
+| Teks redup | `#8A8A93` | Placeholder, hint (kontras memenuhi batas keterbacaan ≥ 4,5:1) |
 | Aksen | `#60A5FA` | Tombol utama, tautan, elemen aktif |
 | Pemasukan | `#34D399` | Nominal dan batang pemasukan |
 | Pengeluaran | `#F87171` | Nominal dan batang pengeluaran |
