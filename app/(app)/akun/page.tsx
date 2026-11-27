@@ -1,8 +1,13 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import type { Metadata } from "next";
 import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Akun",
+};
 
 async function AkunContent() {
   await connection();

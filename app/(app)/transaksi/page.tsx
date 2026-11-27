@@ -1,5 +1,10 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { TransaksiContent } from "./TransaksiContent";
+
+export const metadata: Metadata = {
+  title: "Transaksi",
+};
 
 export default function TransaksiPage() {
   return (

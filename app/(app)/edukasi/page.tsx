@@ -1,6 +1,11 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import type { Metadata } from "next";
 import { EdukasiContentSection } from "./EdukasiContent";
+
+export const metadata: Metadata = {
+  title: "Edukasi",
+};
 
 async function EdukasiPageLoader() {
   await connection();

@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Smart Finance",
+  title: {
+    default: "Smart Finance",
+    template: "%s · Smart Finance",
+  },
   description: "Aplikasi pencatat keuangan multi-pengguna",
 };
 

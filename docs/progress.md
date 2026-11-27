@@ -12,9 +12,21 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.2 selesai: font Inter dan ikon Lucide terpasang; langkah selanjutnya: footer dan perapian). Catatan: `pdfmake` dipin ke versi `0.3.14` (exact) agar membawa `pdfkit@0.20.2` dengan `fontkit@2.0.4` yang memiliki build CommonJS, menyelesaikan error `ERR_REQUIRE_ESM` di runtime Vercel; versi ini jangan dinaikkan sebelum diuji di Vercel.
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.3b prompt A selesai: halaman 404, error, global-error, judul tab per halaman, favicon icon.svg, dan pembersihan console.error/public template selesai; langkah 7.3b prompt B: skeleton, fokus, kontras belum dimulai).
 
 ## Terakhir Selesai
+Fase 7 (Langkah 7.3b Prompt A - 404, Error, Judul Tab, Favicon, Kebersihan):
+- Pembuatan `app/not-found.tsx`: Server Component tema gelap dengan token Tailwind, teks Bahasa Indonesia, judul "Halaman tidak ditemukan", dan tautan kembali ke Beranda.
+- Pembuatan `app/(app)/error.tsx` dan `app/global-error.tsx`: Client Component penanganan galat ramah pengguna tanpa menampilkan detail teknis atau console logging, dilengkapi tombol "Coba lagi" (reset) dan tautan kembali ke Beranda.
+- Judul Tab & Metadata:
+  - `app/layout.tsx`: `title.default: "Smart Finance"`, `title.template: "%s · Smart Finance"`.
+  - Export `metadata` judul per halaman ditambahkan ke seluruh halaman server, dan untuk dua halaman client (`/transaksi/baru` dan `/login`) ditambahkan berkas `layout.tsx` khusus yang mengekspor metadata title ("Tambah Transaksi" dan "Masuk") tanpa membungkus children.
+- Favicon: membuat `app/icon.svg` (persegi sudut membulat dengan latar warna aksen `#60A5FA` dan huruf "S" tebal di tengah) serta menghapus `app/favicon.ico`.
+- Kebersihan:
+  - Menghapus panggilan `console.error` saat hapus transaksi di `app/(app)/transaksi/TransaksiContent.tsx`.
+  - Menghapus 5 berkas SVG template Next.js di `public/` (`file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`) setelah verifikasi tidak ada rujukan di kodebase.
+- Pembaruan dokumen `docs/tech-stack.md`, `docs/progress.md`, dan `docs/design.md`.
+
 Fase 7 (Langkah 7.2 - Font Inter & Ikon Lucide):
 - Penerapan font Inter melalui `next/font/google` (subset latin, variabel `--font-inter`) di `app/layout.tsx` dan `app/globals.css`, menggantikan Geist Sans. Geist Mono tetap dipertahankan untuk kebutuhan angka nominal transaksi (`font-mono`).
 - Pemasangan `lucide-react` versi 1.79.0 (`^1.79.0`).

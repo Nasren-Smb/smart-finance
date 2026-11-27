@@ -1,12 +1,17 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { HomeSummarySection } from "./HomeSummarySection";
 import { HomeChartSection } from "./HomeChartSection";
 import { HomeRecentTransactions } from "./HomeRecentTransactions";
+
+export const metadata: Metadata = {
+  title: "Beranda",
+};
 
 export const instant = false;
 
