@@ -12,9 +12,14 @@ Dokumen ini adalah catatan serah-terima antar sesi dan akun. Agent hanya memperb
 - [ ] Fase 7: Edukasi & Motivasi, footer, perapian
 
 ## Sedang Dikerjakan
-Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.3b prompt A selesai: halaman 404, error, global-error, judul tab per halaman, favicon icon.svg, dan pembersihan console.error/public template selesai; langkah 7.3b prompt B: skeleton, fokus, kontras belum dimulai).
+Fase 7: Edukasi dan Motivasi, footer, dan perapian akhir aplikasi (Langkah 7.3b prompt B1 selesai: skeleton tiga halaman dan aturan fokus terlihat global selesai; langkah 7.3b prompt B2: kontras text-muted belum dimulai).
 
 ## Terakhir Selesai
+Fase 7 (Langkah 7.3b Prompt B1 - Skeleton & Fokus Terlihat Global):
+- Penggantian fallback teks polos Suspense menjadi skeleton bertema gelap (`animate-pulse` dengan kartu ber-border line): `app/(app)/page.tsx`, `app/(app)/akun/page.tsx`, dan `app/(app)/transaksi/baru/page.tsx`.
+- Penambahan aturan fokus terlihat global pada elemen interaktif `a:focus-visible`, `button:focus-visible`, `select:focus-visible`, `[tabindex]:focus-visible` di `app/globals.css` menggunakan token `--color-accent` dengan outline 2px solid dan outline-offset 2px.
+- Pembaruan dokumen `docs/design.md` dan `docs/progress.md`.
+
 Fase 7 (Langkah 7.3b Prompt A - 404, Error, Judul Tab, Favicon, Kebersihan):
 - Pembuatan `app/not-found.tsx`: Server Component tema gelap dengan token Tailwind, teks Bahasa Indonesia, judul "Halaman tidak ditemukan", dan tautan kembali ke Beranda.
 - Pembuatan `app/(app)/error.tsx` dan `app/global-error.tsx`: Client Component penanganan galat ramah pengguna tanpa menampilkan detail teknis atau console logging, dilengkapi tombol "Coba lagi" (reset) dan tautan kembali ke Beranda.
